@@ -167,6 +167,7 @@ def parsing_accuracy(data):
 def benchmark():
     input_dir = "logs/loghub_2k/"  # The input directory of log file
     output_dir = "Logscan_result/"  # The output directory of parsing results
+    os.makedirs(output_dir, exist_ok=True)
 
     benchmark_settings = {
         "HDFS": {
