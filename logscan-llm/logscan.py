@@ -18,7 +18,7 @@ sys.path.append("../")
 nltk.download('punkt')
 regex_tokenizer = RegexpTokenizer(r'\w+')
 
-from .auxiliares import is_word, replace_space, has_numbers, word_position, word_counter, remove_repeated
+from .auxiliares import is_word, replace_space, has_numbers, word_position, word_counter, remove_repeated, parsing_accuracy
 # Funções auxiliares
 
 def log_template(cluster_tagger, log):
@@ -153,20 +153,10 @@ def main():
   benchmark()
 
 
-def parsing_accuracy(data):
-    log_per_template =  data['EventId'].value_counts().to_dict()
-    correct = 0
-    for cluster in np.unique(data['Cluster']):
-        data_cluster = data.loc[data['Cluster'] == cluster]
-        log_per_template_cluster =  data_cluster['EventId'].value_counts().to_dict()
-        for eventid in np.unique(data_cluster['EventId']):
-            if log_per_template[eventid] == log_per_template_cluster[eventid]:
-                correct = correct + log_per_template_cluster[eventid]
-    return correct/len(data)
-
 def benchmark():
     input_dir = "full_dataset/"  # The input directory of log file
     output_dir = "Logscan-llm_result/"  # The output directory of parsing results
+    os.makedirs(output_dir, exist_ok=True)
 
     benchmark_settings = {
         "HDFS": {
