@@ -307,4 +307,4 @@ def benchmark():
     df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
     df_result.set_index("Dataset", inplace=True)
     print(df_result)
-    df_result.to_csv("Logscan_benchmark_result.csv", float_format="%.6f")
+    df_result.to_csv("Logscan-llm_benchmark_result.csv", float_format="%.6f")
