@@ -55,4 +55,4 @@ Open `compare_results.ipynb` to view the bar chart comparing the accuracy scores
 ## Data
 - **Loghub 2k**: Located in `logs/loghub_2k/`.
 - **Loghub 2.0**: Located in `full_dataset/`.
-- **Test Sample**: `logs/Andriod_2k.log_structured.csv` provided by [logparser](https://github.com/logpai/logparser).
+- **Test Sample**: `logs/Android_2k.log_structured.csv` provided by [logparser](https://github.com/logpai/logparser).

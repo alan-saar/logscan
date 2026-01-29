@@ -431,7 +431,7 @@ def main():
         benchmark_loghub2()
     elif args.test:
         print("Running Test on Android_2k...")
-        android_dataset = pd.read_csv("logs/Andriod_2k.log_structured.csv")
+        android_dataset = pd.read_csv("logs/Android_2k.log_structured.csv")
         log_scan_android = LogScan(list(android_dataset['Content']), header=False)
         tagger_android, result_dataset = log_scan_android.pipeline()
         result_dataset['EventId'] = android_dataset['EventId']
