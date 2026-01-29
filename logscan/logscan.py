@@ -222,18 +222,8 @@ class LogScan:
     return tagger, self.data
 
 
-def main():
-  print('Logscan')
-  print(f"The package's version is: {__version__}")
+# Main logic handled below
 
-  # Teste
-  android_dataset = pd.read_csv("logs/Andriod_2k.log_structured.csv")
-  log_scan_android = LogScan(list(android_dataset['Content']), header=False)
-  tagger_android, result_dataset = log_scan_android.pipeline()
-  result_dataset['EventId'] = android_dataset['EventId']
-  accuracy = parsing_accuracy(result_dataset)
-  result_dataset.to_csv('resultados.csv')
-  benchmark()
 
 
 def parsing_accuracy(data):
@@ -247,10 +237,40 @@ def parsing_accuracy(data):
                 correct = correct + log_per_template_cluster[eventid]
     return correct/len(data)
 
-def benchmark():
-    input_dir = "logs/loghub_2k/"  # The input directory of log file
-    output_dir = "Logscan_result/"  # The output directory of parsing results
+import argparse
 
+def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv"):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    benchmark_result = []
+    for dataset, setting in settings.items():
+        print("\n=== Avaliando: %s ===" % dataset)
+        indir = os.path.join(input_dir, os.path.dirname(setting["log_file"]))
+        log_file = os.path.basename(setting["log_file"])
+
+        try:
+            test_dataset = pd.read_csv(os.path.join(indir, log_file + "_structured.csv"))
+            log_scan_android = LogScan(list(test_dataset['Content']), header=False)
+            tagger_android, result_dataset = log_scan_android.pipeline()
+            result_dataset['EventId'] = test_dataset['EventId']
+            result_dataset.to_csv(os.path.join(output_dir, log_file + "_structured.csv"))
+
+            accuracy = parsing_accuracy(result_dataset)
+            benchmark_result.append([dataset, accuracy])
+        except Exception as e:
+            print(f"Error processing {dataset}: {e}")
+
+    print("\n=== Resultados ===")
+    df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
+    df_result.set_index("Dataset", inplace=True)
+    print(df_result)
+    df_result.to_csv(result_file, float_format="%.6f")
+
+def benchmark():
+    input_dir = "logs/loghub_2k/"
+    output_dir = "Logscan_result/"
+    
     benchmark_settings = {
         "HDFS": {
             "log_file": "HDFS/HDFS_2k.log",
@@ -372,29 +392,55 @@ def benchmark():
             ],
             "st": 0.6,
             "depth": 3,
+            "max": 1000
         },
     }
+    
+    run_benchmark(input_dir, output_dir, benchmark_settings)
 
-    benchmark_result = []
-    for dataset, setting in benchmark_settings.items():
-        print("\n=== Avaliando: %s ===" % dataset)
-        indir = os.path.join(input_dir, os.path.dirname(setting["log_file"]))
-        log_file = os.path.basename(setting["log_file"])
+def benchmark_loghub2():
+    input_dir = "full_dataset/"
+    output_dir = "Logscan_loghub2_results/"
 
-        test_dataset = pd.read_csv(os.path.join(indir, log_file + "_structured.csv"))
-        log_scan_android = LogScan(list(test_dataset['Content']), header=False)
+    benchmark_settings = {
+        "Linux": {
+            "log_file": "Linux/Linux_full.log",
+            "log_format": "<Month> <Date> <Time> <Level> <Component>(\[<PID>\])?: <Content>",
+            "regex": [r"(\d+\.){3}\d+", r"\d{2}:\d{2}:\d{2}"],
+            "st": 0.39,
+            "depth": 6,
+        },
+        # Add other Loghub 2.0 datasets here as needed
+    }
+    
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="Logscan_loghub2_benchmark_result.csv")
+
+
+def main():
+    print('Logscan')
+    print(f"The package's version is: {__version__}")
+    
+    parser = argparse.ArgumentParser(description="LogScan: Automated Log Parsing")
+    parser.add_argument("--v2", action="store_true", help="Run benchmark on Loghub 2.0 dataset (Linux only for now)")
+    parser.add_argument("--test", action="store_true", help="Run a quick test on Android_2k logs")
+    
+    args = parser.parse_args()
+
+    if args.v2:
+        print("Running Loghub 2.0 Benchmark...")
+        benchmark_loghub2()
+    elif args.test:
+        print("Running Test on Android_2k...")
+        android_dataset = pd.read_csv("logs/Andriod_2k.log_structured.csv")
+        log_scan_android = LogScan(list(android_dataset['Content']), header=False)
         tagger_android, result_dataset = log_scan_android.pipeline()
-        result_dataset['EventId'] = test_dataset['EventId']
-        result_dataset.to_csv(os.path.join(output_dir, log_file + "_structured.csv"))
-
+        result_dataset['EventId'] = android_dataset['EventId']
         accuracy = parsing_accuracy(result_dataset)
-        benchmark_result.append([dataset, accuracy])
-
-
-    print("\n=== Resultados ===")
-    df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
-    df_result.set_index("Dataset", inplace=True)
-    print(df_result)
-    df_result.to_csv("Logscan_benchmark_result.csv", float_format="%.6f")
+        print(f"Test Accuracy: {accuracy}")
+        result_dataset.to_csv('resultados.csv')
+    else:
+        # Default behavior: run original benchmark
+        print("Running Standard Loghub 2k Benchmark...")
+        benchmark()
 
 
