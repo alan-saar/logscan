@@ -1,4 +1,12 @@
 
+"""
+LogScan Module.
+
+This module implements the LogScan algorithm for automated log parsing and template extraction.
+It uses a pipeline of text preprocessing, TF-IDF vectorization, DBSCAN clustering,
+and word frequency analysis to identify variable parts of log messages.
+"""
+
 from . import __version__
 
 # Libs
@@ -22,6 +30,16 @@ from .auxiliares import is_word, replace_space, has_numbers, word_position, word
 # Funções auxiliares
 
 def log_template(cluster_tagger, log):
+  """
+  Generates a log template by replacing variable parts with '<*>'.
+
+  Args:
+      cluster_tagger (list): List of tagged words (variable/template) for the cluster.
+      log (str): The raw log message.
+
+  Returns:
+      tuple: (template_string, list_of_variables)
+  """
   new_log = replace_space(log)
   tokens = wordpunct_tokenize(new_log)
   variables_list = []
@@ -43,6 +61,18 @@ def log_template(cluster_tagger, log):
 
 
 def word_classifier(wordfrequency):
+  """
+  Classifies words as 'variable' or 'template' based on frequency.
+
+  Words with frequency below the 30th percentile or containing numbers
+  are classified as variables.
+
+  Args:
+      wordfrequency (list): List of (word, position, frequency) tuples.
+
+  Returns:
+      list: List of (word, position, frequency, label) tuples.
+  """
   frequency_list = list(map(operator.itemgetter(2), wordfrequency))
   p30 = np.percentile(frequency_list, 30)
   label = []
@@ -59,7 +89,21 @@ def word_classifier(wordfrequency):
 # Logscan
 
 class LogScan:
+  """
+  Main class for the LogScan algorithm.
+
+  Attributes:
+      data (pd.DataFrame): DataFrame storing log data and processing results.
+  """
   def __init__(self, logdata: list, header: bool, header_regex = None):
+    """
+    Initializes the LogScan instance.
+
+    Args:
+        logdata (list): List of raw log strings.
+        header (bool): Whether to strip headers using regex.
+        header_regex (str, optional): Regex pattern for header removal.
+    """
     print('- Logscan v1.0')
     if header:
       print('-- Header Extraction')
@@ -69,6 +113,11 @@ class LogScan:
       self.data = pd.DataFrame(logdata,columns=['Log'])
 
   def clean_data(self):
+    """
+    Preprocesses log data by tokenizing and removing non-word characters.
+
+    Populates the 'CleanLog' column in self.data.
+    """
     print('-- Data Cleaning')
     clear_content = []
     for _, row in self.data.iterrows():
@@ -83,6 +132,12 @@ class LogScan:
     self.data['CleanLog'] = clear_content
 
   def tfidf_transformer(self):
+    """
+    Converts cleaned logs to TF-IDF vectors.
+
+    Returns:
+        pd.DataFrame: DataFrame containing the TF-IDF feature matrix.
+    """
     print('-- TF-IDF Transformer')
     vectorizer = TfidfVectorizer()
     vectors = vectorizer.fit_transform(self.data['CleanLog'])
@@ -93,12 +148,26 @@ class LogScan:
     return logs_embedding_df
 
   def dbscanModel(self, logs_embedding_df):
+    """
+    Apply DBSCAN clustering to the log embeddings.
+
+    Populates the 'Cluster' column in self.data.
+
+    Args:
+        logs_embedding_df (pd.DataFrame): TF-IDF feature matrix.
+    """
     print('-- DBSCAN')
     clusterModel = DBSCAN(min_samples=2)
     clusterModel.fit(logs_embedding_df)
     self.data['Cluster'] = clusterModel.labels_
 
   def word_tagger(self):
+    """
+    Analyzes word frequency per cluster to tag words as variables or template parts.
+
+    Returns:
+        list: A list of (cluster_id, labeled_words) tuples.
+    """
     print('-- Word Tagger')
     tagger = []
     for cluster in np.unique(self.data['Cluster']):
@@ -115,6 +184,14 @@ class LogScan:
     return tagger
 
   def create_templates(self, tagger):
+    """
+    Generates templates for all logs based on the tagger results.
+
+    Populates 'Template' and 'Variables' columns in self.data.
+
+    Args:
+        tagger (list): Output from word_tagger().
+    """
     print('-- Template Extraction')
     templates = []
     variables = []
@@ -131,6 +208,12 @@ class LogScan:
     self.data['Variables'] = variables
 
   def pipeline(self):
+    """
+    Runs the full LogScan pipeline.
+
+    Returns:
+        tuple: (tagger, result_dataframe)
+    """
     self.clean_data()
     log_embedding_df = self.tfidf_transformer()
     self.dbscanModel(log_embedding_df)
