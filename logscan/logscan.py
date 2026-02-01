@@ -402,46 +402,60 @@ def benchmark_loghub2():
     input_dir = "full_dataset/"
     output_dir = "Logscan_loghub2_results/"
 
+    # datasets por ordem de tamanho
     benchmark_settings = {
-        "HDFS": {
-            "log_file": "HDFS/HDFS_full.log",
-            "log_format": "<Date> <Time> <Pid> <Level> <Component>: <Content>",
-            "regex": [r"blk_-?\d+", r"(\d+\.){3}\d+(:\d+)?"],
-            "st": 0.5,
+        # "Linux": {
+        #     "log_file": "Linux/Linux_full.log",
+        #     "log_format": "<Month> <Date> <Time> <Level> <Component>(\[<PID>\])?: <Content>",
+        #     "regex": [r"(\d+\.){3}\d+", r"\d{2}:\d{2}:\d{2}"],
+        #     "st": 0.39,
+        #     "depth": 6,
+        # },
+        # "Proxifier": {
+        #     "log_file": "Proxifier/Proxifier_full.log",
+        #     "log_format": "\[<Time>\] <Program> - <Content>",
+        #     "regex": [
+        #         r"<\d+\ssec",
+        #         r"([\w-]+\.)+[\w-]+(:\d+)?",
+        #         r"\d{2}:\d{2}(:\d{2})*",
+        #         r"[KGTM]B",
+        #     ],
+        #     "st": 0.6,
+        #     "depth": 3,
+        #     "max": 1000
+        # },
+        # "Apache": {
+        #     "log_file": "Apache/Apache_full.log",
+        #     "log_format": "\[<Time>\] \[<Level>\] <Content>",
+        #     "regex": [r"(\d+\.){3}\d+"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "Zookeeper": {
+        #     "log_file": "Zookeeper/Zookeeper_full.log",
+        #     "log_format": "<Date> <Time> - <Level>  \[<Node>:<Component>@<Id>\] - <Content>",
+        #     "regex": [r"(/|)(\d+\.){3}\d+(:\d+)?"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "Mac": {
+        #     "log_file": "Mac/Mac_full.log",
+        #     "log_format": "<Month>  <Date> <Time> <User> <Component>\[<PID>\]( \(<Address>\))?: <Content>",
+        #     "regex": [r"([\w-]+\.){2,}[\w-]+"],
+        #     "st": 0.7,
+        #     "depth": 6,
+        # },
+        "HealthApp": {
+            "log_file": "HealthApp/HealthApp_full.log",
+            "log_format": "<Time>\|<Component>\|<Pid>\|<Content>",
+            "regex": [],
+            "st": 0.2,
             "depth": 4,
         },
         "Hadoop": {
             "log_file": "Hadoop/Hadoop_full.log",
             "log_format": "<Date> <Time> <Level> \[<Process>\] <Component>: <Content>",
             "regex": [r"(\d+\.){3}\d+"],
-            "st": 0.5,
-            "depth": 4,
-        },
-        "Spark": {
-            "log_file": "Spark/Spark_full.log",
-            "log_format": "<Date> <Time> <Level> <Component>: <Content>",
-            "regex": [r"(\d+\.){3}\d+", r"\b[KGTM]?B\b", r"([\w-]+\.){2,}[\w-]+"],
-            "st": 0.5,
-            "depth": 4,
-        },
-        "Zookeeper": {
-            "log_file": "Zookeeper/Zookeeper_full.log",
-            "log_format": "<Date> <Time> - <Level>  \[<Node>:<Component>@<Id>\] - <Content>",
-            "regex": [r"(/|)(\d+\.){3}\d+(:\d+)?"],
-            "st": 0.5,
-            "depth": 4,
-        },
-        "OpenStack": {
-            "log_file": "OpenStack/OpenStack_full.log",
-            "log_format": "<Logrecord> <Date> <Time> <Pid> <Level> <Component> \[<ADDR>\] <Content>",
-            "regex": [r"((\d+\.){3}\d+,?)+", r"/.+?\s", r"\d+"],
-            "st": 0.5,
-            "depth": 5,
-        },
-        "BGL": {
-            "log_file": "BGL/BGL_full.log",
-            "log_format": "<Label> <Timestamp> <Date> <Node> <Time> <NodeRepeat> <Type> <Component> <Level> <Content>",
-            "regex": [r"core\.\d+"],
             "st": 0.5,
             "depth": 4,
         },
@@ -452,40 +466,12 @@ def benchmark_loghub2():
             "st": 0.5,
             "depth": 4,
         },
-        "Thunderbird": {
-            "log_file": "Thunderbird/Thunderbird_full.log",
-            "log_format": "<Label> <Timestamp> <Date> <User> <Month> <Day> <Time> <Location> <Component>(\[<PID>\])?: <Content>",
-            "regex": [r"(\d+\.){3}\d+"],
+        "OpenStack": {
+            "log_file": "OpenStack/OpenStack_full.log",
+            "log_format": "<Logrecord> <Date> <Time> <Pid> <Level> <Component> \[<ADDR>\] <Content>",
+            "regex": [r"((\d+\.){3}\d+,?)+", r"/.+?\s", r"\d+"],
             "st": 0.5,
-            "depth": 4,
-        },
-        "Linux": {
-            "log_file": "Linux/Linux_full.log",
-            "log_format": "<Month> <Date> <Time> <Level> <Component>(\[<PID>\])?: <Content>",
-            "regex": [r"(\d+\.){3}\d+", r"\d{2}:\d{2}:\d{2}"],
-            "st": 0.39,
-            "depth": 6,
-        },
-        "Mac": {
-            "log_file": "Mac/Mac_full.log",
-            "log_format": "<Month>  <Date> <Time> <User> <Component>\[<PID>\]( \(<Address>\))?: <Content>",
-            "regex": [r"([\w-]+\.){2,}[\w-]+"],
-            "st": 0.7,
-            "depth": 6,
-        },
-        "HealthApp": {
-            "log_file": "HealthApp/HealthApp_full.log",
-            "log_format": "<Time>\|<Component>\|<Pid>\|<Content>",
-            "regex": [],
-            "st": 0.2,
-            "depth": 4,
-        },
-        "Apache": {
-            "log_file": "Apache/Apache_full.log",
-            "log_format": "\[<Time>\] \[<Level>\] <Content>",
-            "regex": [r"(\d+\.){3}\d+"],
-            "st": 0.5,
-            "depth": 4,
+            "depth": 5,
         },
         "OpenSSH": {
             "log_file": "OpenSSH/OpenSSH_full.log",
@@ -494,19 +480,34 @@ def benchmark_loghub2():
             "st": 0.6,
             "depth": 5,
         },
-        "Proxifier": {
-            "log_file": "Proxifier/Proxifier_full.log",
-            "log_format": "\[<Time>\] <Program> - <Content>",
-            "regex": [
-                r"<\d+\ssec",
-                r"([\w-]+\.)+[\w-]+(:\d+)?",
-                r"\d{2}:\d{2}(:\d{2})*",
-                r"[KGTM]B",
-            ],
-            "st": 0.6,
-            "depth": 3,
-            "max": 1000
-        },
+        # "BGL": {
+        #     "log_file": "BGL/BGL_full.log",
+        #     "log_format": "<Label> <Timestamp> <Date> <Node> <Time> <NodeRepeat> <Type> <Component> <Level> <Content>",
+        #     "regex": [r"core\.\d+"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "HDFS": {
+        #     "log_file": "HDFS/HDFS_full.log",
+        #     "log_format": "<Date> <Time> <Pid> <Level> <Component>: <Content>",
+        #     "regex": [r"blk_-?\d+", r"(\d+\.){3}\d+(:\d+)?"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "Spark": {
+        #     "log_file": "Spark/Spark_full.log",
+        #     "log_format": "<Date> <Time> <Level> <Component>: <Content>",
+        #     "regex": [r"(\d+\.){3}\d+", r"\b[KGTM]?B\b", r"([\w-]+\.){2,}[\w-]+"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "Thunderbird": {
+        #     "log_file": "Thunderbird/Thunderbird_full.log",
+        #     "log_format": "<Label> <Timestamp> <Date> <User> <Month> <Day> <Time> <Location> <Component>(\[<PID>\])?: <Content>",
+        #     "regex": [r"(\d+\.){3}\d+"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
     }
     
     run_benchmark(input_dir, output_dir, benchmark_settings, result_file="Logscan_loghub2_benchmark_result.csv")
