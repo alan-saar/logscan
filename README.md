@@ -28,6 +28,16 @@ python3 -m logscan --v2
 ```
 This will process the Linux dataset located in `full_dataset/` and save results to `Logscan_loghub2_results/`.
 
+### Run Loghub 2.0 Benchmark with Hybrid LLM
+To run the benchmark on the Loghub 2.0 dataset using the hybrid LILAC LLM parser:
+
+```bash
+python3 -m logscan --v2-llm
+```
+This requires an OpenAI API key. You can provide it via an `openai_key.txt` file in the project root or by setting the `OPENAI_KEY` environment variable.
+
+This will process datasets (e.g., Linux, Proxifier, Apache, Zookeeper, Mac) using a hybrid approach (DBSCAN + LLM) and save results to `Logscan_llm_results/`.
+
 ### Run Quick Test
 To run a quick test on a small sample (Android 2k):
 

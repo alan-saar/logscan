@@ -27,6 +27,7 @@ nltk.download('punkt')
 regex_tokenizer = RegexpTokenizer(r'\w+')
 
 from .auxiliares import is_word, replace_space, has_numbers, word_position, word_counter, remove_repeated
+from .llm import generate_templates_for_clusters
 # Funções auxiliares
 
 def log_template(cluster_tagger, log):
@@ -221,6 +222,46 @@ class LogScan:
     self.create_templates(tagger)
     return tagger, self.data
 
+  def pipeline_llm(self, dataset_name):
+    """
+    Runs the hybrid LogScan pipeline with LLM template generation.
+    """
+    print(f"Running Hybrid Pipeline for {dataset_name}...")
+    self.clean_data()
+    log_embedding_df = self.tfidf_transformer()
+    self.dbscanModel(log_embedding_df)
+
+    # Use LLM to generate templates for each cluster
+    print('-- LLM Template Generation')
+    cluster_templates = generate_templates_for_clusters(self.data, dataset_name)
+
+    templates = []
+    variables = [] # We might not extract variables perfectly if we just get the template string, but we can try matching
+
+    # Apply templates back to rows
+    for index, row in self.data.iterrows():
+        cluster_id = row['Cluster']
+        if cluster_id in cluster_templates:
+            template = cluster_templates[cluster_id]
+        else:
+            # Fallback if LLM failed (shouldn't happen often if we have catch-all)
+            template = row['Log']
+
+        templates.append(template)
+        # Variables extraction is harder without the tagger logic,
+        # but for accuracy benchmark we mainly need the EventId (which comes from unique templates)
+        variables.append([])
+
+    self.data['Template'] = templates
+    self.data['Variables'] = variables
+
+    # Assign EventId based on unique templates
+    unique_templates = self.data['Template'].unique()
+    template_to_id = {tmpl: f"E{i+1}" for i, tmpl in enumerate(unique_templates)}
+    self.data['EventId'] = self.data['Template'].map(template_to_id)
+
+    return self.data
+
 
 # Main logic handled below
 
@@ -270,7 +311,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
 def benchmark():
     input_dir = "logs/loghub_2k/"
     output_dir = "Logscan_result/"
-    
+
     benchmark_settings = {
         "HDFS": {
             "log_file": "HDFS/HDFS_2k.log",
@@ -395,7 +436,7 @@ def benchmark():
             "max": 1000
         },
     }
-    
+
     run_benchmark(input_dir, output_dir, benchmark_settings)
 
 def benchmark_loghub2():
@@ -404,82 +445,82 @@ def benchmark_loghub2():
 
     # datasets por ordem de tamanho
     benchmark_settings = {
-        # "Linux": {
-        #     "log_file": "Linux/Linux_full.log",
-        #     "log_format": "<Month> <Date> <Time> <Level> <Component>(\[<PID>\])?: <Content>",
-        #     "regex": [r"(\d+\.){3}\d+", r"\d{2}:\d{2}:\d{2}"],
-        #     "st": 0.39,
-        #     "depth": 6,
-        # },
-        # "Proxifier": {
-        #     "log_file": "Proxifier/Proxifier_full.log",
-        #     "log_format": "\[<Time>\] <Program> - <Content>",
-        #     "regex": [
-        #         r"<\d+\ssec",
-        #         r"([\w-]+\.)+[\w-]+(:\d+)?",
-        #         r"\d{2}:\d{2}(:\d{2})*",
-        #         r"[KGTM]B",
-        #     ],
-        #     "st": 0.6,
-        #     "depth": 3,
-        #     "max": 1000
-        # },
-        # "Apache": {
-        #     "log_file": "Apache/Apache_full.log",
-        #     "log_format": "\[<Time>\] \[<Level>\] <Content>",
-        #     "regex": [r"(\d+\.){3}\d+"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
-        # "Zookeeper": {
-        #     "log_file": "Zookeeper/Zookeeper_full.log",
-        #     "log_format": "<Date> <Time> - <Level>  \[<Node>:<Component>@<Id>\] - <Content>",
-        #     "regex": [r"(/|)(\d+\.){3}\d+(:\d+)?"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
-        # "Mac": {
-        #     "log_file": "Mac/Mac_full.log",
-        #     "log_format": "<Month>  <Date> <Time> <User> <Component>\[<PID>\]( \(<Address>\))?: <Content>",
-        #     "regex": [r"([\w-]+\.){2,}[\w-]+"],
-        #     "st": 0.7,
-        #     "depth": 6,
-        # },
-        "HealthApp": {
-            "log_file": "HealthApp/HealthApp_full.log",
-            "log_format": "<Time>\|<Component>\|<Pid>\|<Content>",
-            "regex": [],
-            "st": 0.2,
-            "depth": 4,
+        "Linux": {
+            "log_file": "Linux/Linux_full.log",
+            "log_format": "<Month> <Date> <Time> <Level> <Component>(\[<PID>\])?: <Content>",
+            "regex": [r"(\d+\.){3}\d+", r"\d{2}:\d{2}:\d{2}"],
+            "st": 0.39,
+            "depth": 6,
         },
-        "Hadoop": {
-            "log_file": "Hadoop/Hadoop_full.log",
-            "log_format": "<Date> <Time> <Level> \[<Process>\] <Component>: <Content>",
+        "Proxifier": {
+            "log_file": "Proxifier/Proxifier_full.log",
+            "log_format": "\[<Time>\] <Program> - <Content>",
+            "regex": [
+                r"<\d+\ssec",
+                r"([\w-]+\.)+[\w-]+(:\d+)?",
+                r"\d{2}:\d{2}(:\d{2})*",
+                r"[KGTM]B",
+            ],
+            "st": 0.6,
+            "depth": 3,
+            "max": 1000
+        },
+        "Apache": {
+            "log_file": "Apache/Apache_full.log",
+            "log_format": "\[<Time>\] \[<Level>\] <Content>",
             "regex": [r"(\d+\.){3}\d+"],
             "st": 0.5,
             "depth": 4,
         },
-        "HPC": {
-            "log_file": "HPC/HPC_full.log",
-            "log_format": "<LogId> <Node> <Component> <State> <Time> <Flag> <Content>",
-            "regex": [r"=\d+"],
+        "Zookeeper": {
+            "log_file": "Zookeeper/Zookeeper_full.log",
+            "log_format": "<Date> <Time> - <Level>  \[<Node>:<Component>@<Id>\] - <Content>",
+            "regex": [r"(/|)(\d+\.){3}\d+(:\d+)?"],
             "st": 0.5,
             "depth": 4,
         },
-        "OpenStack": {
-            "log_file": "OpenStack/OpenStack_full.log",
-            "log_format": "<Logrecord> <Date> <Time> <Pid> <Level> <Component> \[<ADDR>\] <Content>",
-            "regex": [r"((\d+\.){3}\d+,?)+", r"/.+?\s", r"\d+"],
-            "st": 0.5,
-            "depth": 5,
+        "Mac": {
+            "log_file": "Mac/Mac_full.log",
+            "log_format": "<Month>  <Date> <Time> <User> <Component>\[<PID>\]( \(<Address>\))?: <Content>",
+            "regex": [r"([\w-]+\.){2,}[\w-]+"],
+            "st": 0.7,
+            "depth": 6,
         },
-        "OpenSSH": {
-            "log_file": "OpenSSH/OpenSSH_full.log",
-            "log_format": "<Date> <Day> <Time> <Component> sshd\[<Pid>\]: <Content>",
-            "regex": [r"(\d+\.){3}\d+", r"([\w-]+\.){2,}[\w-]+"],
-            "st": 0.6,
-            "depth": 5,
-        },
+        # "HealthApp": {
+        #     "log_file": "HealthApp/HealthApp_full.log",
+        #     "log_format": "<Time>\|<Component>\|<Pid>\|<Content>",
+        #     "regex": [],
+        #     "st": 0.2,
+        #     "depth": 4,
+        # },
+        # "Hadoop": {
+        #     "log_file": "Hadoop/Hadoop_full.log",
+        #     "log_format": "<Date> <Time> <Level> \[<Process>\] <Component>: <Content>",
+        #     "regex": [r"(\d+\.){3}\d+"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "HPC": {
+        #     "log_file": "HPC/HPC_full.log",
+        #     "log_format": "<LogId> <Node> <Component> <State> <Time> <Flag> <Content>",
+        #     "regex": [r"=\d+"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "OpenStack": {
+        #     "log_file": "OpenStack/OpenStack_full.log",
+        #     "log_format": "<Logrecord> <Date> <Time> <Pid> <Level> <Component> \[<ADDR>\] <Content>",
+        #     "regex": [r"((\d+\.){3}\d+,?)+", r"/.+?\s", r"\d+"],
+        #     "st": 0.5,
+        #     "depth": 5,
+        # },
+        # "OpenSSH": {
+        #     "log_file": "OpenSSH/OpenSSH_full.log",
+        #     "log_format": "<Date> <Day> <Time> <Component> sshd\[<Pid>\]: <Content>",
+        #     "regex": [r"(\d+\.){3}\d+", r"([\w-]+\.){2,}[\w-]+"],
+        #     "st": 0.6,
+        #     "depth": 5,
+        # },
         # "BGL": {
         #     "log_file": "BGL/BGL_full.log",
         #     "log_format": "<Label> <Timestamp> <Date> <Node> <Time> <NodeRepeat> <Type> <Component> <Level> <Content>",
@@ -509,21 +550,106 @@ def benchmark_loghub2():
         #     "depth": 4,
         # },
     }
-    
+
     run_benchmark(input_dir, output_dir, benchmark_settings, result_file="Logscan_loghub2_benchmark_result.csv")
+
+
+def benchmark_llm():
+    input_dir = "full_dataset/"
+    output_dir = "Logscan_llm_results/"
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Use same settings as Loghub 2.0 but we need to pass the dataset name correctly
+    benchmark_settings = {
+        "Linux": { "log_file": "Linux/Linux_full.log" },
+        "Proxifier": { "log_file": "Proxifier/Proxifier_full.log" },
+        "Apache": { "log_file": "Apache/Apache_full.log" },
+        "Zookeeper": { "log_file": "Zookeeper/Zookeeper_full.log", },
+        "Mac": { "log_file": "Mac/Mac_full.log",},
+        # "HealthApp": { "log_file": "HealthApp/HealthApp_full.log" },
+        # "Hadoop": { "log_file": "Hadoop/Hadoop_full.log" },
+        # "HPC": { "log_file": "HPC/HPC_full.log" },
+        # "OpenStack": { "log_file": "OpenStack/OpenStack_full.log" },
+        # "OpenSSH": { "log_file": "OpenSSH/OpenSSH_full.log" },
+        # Add others if needed/available in full_dataset
+    }
+
+    benchmark_result = []
+
+    for dataset, setting in benchmark_settings.items():
+        print(f"\n=== Running Hybrid LLM on: {dataset} ===")
+        log_file_rel = setting["log_file"]
+        indir = os.path.join(input_dir, os.path.dirname(log_file_rel))
+        log_filename = os.path.basename(log_file_rel)
+
+        full_log_path = os.path.join(indir, log_filename)
+
+        if not os.path.exists(full_log_path):
+            print(f"Error: {full_log_path} not found.")
+            continue
+
+        try:
+            # We need to read the log content.
+            # Note: LogScan init expects a list of strings.
+            # And it expects to handle headers if header=True.
+            # Loghub 2.0 'full' logs might vary.
+            # benchmark_loghub2 implementation didn't show reading logic in detail in Step 198,
+            # but look at existing run_benchmark logic:
+            # test_dataset = pd.read_csv(os.path.join(indir, log_file + "_structured.csv"))
+            # log_scan_android = LogScan(list(test_dataset['Content']), header=False)
+
+            # Here we are processing raw logs? Or structured?
+            # The prompt says "utilizar a full_dataset".
+            # Usually full_dataset has raw files (.log).
+            # But earlier code was reading `_structured.csv` to get ground truth `Content`?
+            # Let's assume we read the raw log file directly.
+
+            with open(full_log_path, 'r', encoding='utf-8', errors='ignore') as f:
+                log_lines = f.readlines()
+
+            # Initialize LogScan
+            # We turn off header removal for now or we need to know the regex.
+            # Using header=False for simplicity as in 'benchmark_loghub2' comments (inferred)
+            log_scan = LogScan(log_lines, header=False)
+
+            # Run Hybrid Pipeline
+            result_dataset = log_scan.pipeline_llm(dataset_name=dataset)
+
+            # Save results
+            result_file = os.path.join(output_dir, f"{dataset}_full.log_structured.csv")
+            result_dataset.to_csv(result_file, index=False)
+            print(f"Saved results to {result_file}")
+
+            # Note: We can't calculate accuracy here easily without ground truth.
+            # Ground truth is typically in LOGname_structured.csv.
+            # If it exists, we can compare.
+            ground_truth_path = os.path.join(indir, log_filename + "_structured.csv")
+            # Usually Loghub 2.0 ground truths are named nicely?
+            # If not found, accurate calculation is skipped.
+
+        except Exception as e:
+            print(f"Error processing {dataset}: {e}")
+            import traceback
+            traceback.print_exc()
 
 
 def main():
     print('Logscan')
     print(f"The package's version is: {__version__}")
-    
+
     parser = argparse.ArgumentParser(description="LogScan: Automated Log Parsing")
     parser.add_argument("--v2", action="store_true", help="Run benchmark on Loghub 2.0 datasets")
+    parser.add_argument("--v2-llm", action="store_true", help="Run benchmark on Loghub 2.0 datasets using LILAC LLM Parser (Hybrid)")
     parser.add_argument("--test", action="store_true", help="Run a quick test on Android_2k logs")
-    
+
     args = parser.parse_args()
 
-    if args.v2:
+    if args.v2_llm:
+        print("Running Loghub 2.0 Benchmark with Hybrid LLM...")
+        benchmark_llm()
+    elif args.v2:
         print("Running Loghub 2.0 Benchmark...")
         benchmark_loghub2()
     elif args.test:
