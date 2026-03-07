@@ -29,12 +29,12 @@ regex_tokenizer = RegexpTokenizer(r'\w+')
 from .auxiliares import is_word, replace_space, has_numbers, word_position, word_counter, remove_repeated
 # Funções auxiliares
 
-def log_template(cluster_tagger, log):
+def log_template(cluster_tagger_dict, log):
   """
   Generates a log template by replacing variable parts with '<*>'.
 
   Args:
-      cluster_tagger (list): List of tagged words (variable/template) for the cluster.
+      cluster_tagger_dict (dict): Dictionary mapping token to (variable/template) label.
       log (str): The raw log message.
 
   Returns:
@@ -46,10 +46,7 @@ def log_template(cluster_tagger, log):
   template = ''
   for token in tokens:
     if token != "_IS_SPACE_":
-      for word in cluster_tagger:
-        if word[0] == token:
-          info = word[3]
-          break
+      info = cluster_tagger_dict.get(token, 'template')
       if info == 'variable':
         variables_list.append(token)
         template = template + '<*>'
@@ -95,6 +92,14 @@ class LogScan:
   Attributes:
       data (pd.DataFrame): DataFrame storing log data and processing results.
   """
+  def _update_progress(self, percent):
+    bars = int(percent / 5)
+    if bars > 20: bars = 20
+    if percent > 100: percent = 100
+    bar_str = '#' * bars + ' ' * (20 - bars)
+    sys.stdout.write(f'\r[{bar_str}] {percent}%')
+    sys.stdout.flush()
+
   def __init__(self, logdata: list, header: bool, header_regex = None):
     """
     Initializes the LogScan instance.
@@ -104,9 +109,10 @@ class LogScan:
         header (bool): Whether to strip headers using regex.
         header_regex (str, optional): Regex pattern for header removal.
     """
-    print('- Logscan v1.0')
+    # print('- Logscan v1.0')
+    self._update_progress(0)
     if header:
-      print('-- Header Extraction')
+      # print('-- Header Extraction')
       loglist= [re.sub(f'{header_regex}', '', log) for log in logdata]
       self.data = pd.DataFrame(loglist,columns=['Log'])
     else:
@@ -118,9 +124,11 @@ class LogScan:
 
     Populates the 'CleanLog' column in self.data.
     """
-    print('-- Data Cleaning')
+    # print('-- Data Cleaning')
     clear_content = []
-    for _, row in self.data.iterrows():
+    total = len(self.data)
+    for i, (_, row) in enumerate(self.data.iterrows()):
+        self._update_progress(int(i / max(1, total) * 20))
         raw_log = row['Log']
         log_tokens = regex_tokenizer.tokenize(raw_log)
         clean_text = []
@@ -133,33 +141,36 @@ class LogScan:
 
   def tfidf_transformer(self):
     """
-    Converts cleaned logs to TF-IDF vectors.
+    Converts unique cleaned logs to TF-IDF vectors.
 
     Returns:
-        pd.DataFrame: DataFrame containing the TF-IDF feature matrix.
+        tuple: (vectors, unique_clean_logs)
     """
-    print('-- TF-IDF Transformer')
+    # print('-- TF-IDF Transformer')
+    self._update_progress(20)
+    unique_clean_logs = self.data['CleanLog'].drop_duplicates().reset_index(drop=True)
     vectorizer = TfidfVectorizer()
-    vectors = vectorizer.fit_transform(self.data['CleanLog'])
-    feature_names = vectorizer.get_feature_names_out()
-    dense = vectors.todense()
-    denselist = dense.tolist()
-    logs_embedding_df = pd.DataFrame(denselist, columns=feature_names)
-    return logs_embedding_df
+    vectors = vectorizer.fit_transform(unique_clean_logs)
+    return vectors, unique_clean_logs
 
-  def dbscanModel(self, logs_embedding_df):
+  def dbscanModel(self, vectors, unique_clean_logs):
     """
     Apply DBSCAN clustering to the log embeddings.
 
     Populates the 'Cluster' column in self.data.
 
     Args:
-        logs_embedding_df (pd.DataFrame): TF-IDF feature matrix.
+        vectors (scipy.sparse.csr_matrix): TF-IDF feature matrix.
+        unique_clean_logs (pd.Series): The unique logs.
     """
-    print('-- DBSCAN')
+    # print('-- DBSCAN')
+    self._update_progress(30)
     clusterModel = DBSCAN(min_samples=2)
-    clusterModel.fit(logs_embedding_df)
-    self.data['Cluster'] = clusterModel.labels_
+    clusterModel.fit(vectors)
+    
+    # Map clusters back to all rows based on their CleanLog
+    cluster_map = dict(zip(unique_clean_logs, clusterModel.labels_))
+    self.data['Cluster'] = self.data['CleanLog'].map(cluster_map)
 
   def word_tagger(self):
     """
@@ -168,17 +179,29 @@ class LogScan:
     Returns:
         list: A list of (cluster_id, labeled_words) tuples.
     """
-    print('-- Word Tagger')
+    # print('-- Word Tagger')
+    self._update_progress(40)
     tagger = []
-    for cluster in np.unique(self.data['Cluster']):
-      cluster_tokens = []
+    clusters = np.unique(self.data['Cluster'])
+    total_clusters = len(clusters)
+    for i, cluster in enumerate(clusters):
+      self._update_progress(40 + int((i / max(1, total_clusters)) * 30))
+      # Count occurrences of each unique log in this cluster
       dados_cluster = self.data.loc[self.data['Cluster'] == cluster]['Log']
-      for log in dados_cluster:
+      unique_logs_counts = dados_cluster.value_counts()
+      
+      from collections import Counter
+      cluster_token_counts = Counter()
+      
+      for log, count in unique_logs_counts.items():
         tokens = wordpunct_tokenize(log)
-        tokens_position = word_position (tokens)
-        cluster_tokens = cluster_tokens + tokens_position
-      word_frequency = word_counter(cluster_tokens)
-      new_wordfrequency = remove_repeated(word_frequency)
+        tokens_position = word_position(tokens)
+        # Update counter with multiplied counts
+        for tp in tokens_position:
+            cluster_token_counts[tp] += count
+            
+      # Convert counter back to word_frequency format
+      new_wordfrequency = [(w[0], w[1], count) for w, count in cluster_token_counts.items()]
       wordlabel = word_classifier(new_wordfrequency)
       tagger.append((cluster, wordlabel))
     return tagger
@@ -192,18 +215,37 @@ class LogScan:
     Args:
         tagger (list): Output from word_tagger().
     """
-    print('-- Template Extraction')
+    # print('-- Template Extraction')
+    self._update_progress(70)
     templates = []
     variables = []
-    for index, row in self.data.iterrows():
+    
+    # Convert tagger to a dictionary for faster lookups
+    tagger_dict = {}
+    for item in tagger:
+        word_dict = {}
+        for w in item[1]:
+            if w[0] not in word_dict:
+                word_dict[w[0]] = w[3]
+        tagger_dict[item[0]] = word_dict
+    
+    total = len(self.data)
+    memo = {}
+    for i, (index, row) in enumerate(self.data.iterrows()):
+      self._update_progress(70 + int((i / max(1, total)) * 30))
+      log_str = row['Log']
       log_cluster = row['Cluster']
-      for cluster_tagger in tagger:
-        if cluster_tagger[0] == log_cluster:
-          log_tagger = cluster_tagger[1]
-          break
-      template, variables_list = log_template(log_tagger, row['Log'])
+      
+      if log_str in memo:
+          template, variables_list = memo[log_str]
+      else:
+          log_tagger = tagger_dict.get(log_cluster)
+          template, variables_list = log_template(log_tagger, log_str)
+          memo[log_str] = (template, variables_list)
+          
       templates.append(template)
       variables.append(variables_list)
+      
     self.data['Template'] = templates
     self.data['Variables'] = variables
 
@@ -215,10 +257,12 @@ class LogScan:
         tuple: (tagger, result_dataframe)
     """
     self.clean_data()
-    log_embedding_df = self.tfidf_transformer()
-    self.dbscanModel(log_embedding_df)
+    vectors, unique_clean_logs = self.tfidf_transformer()
+    self.dbscanModel(vectors, unique_clean_logs)
     tagger = self.word_tagger()
     self.create_templates(tagger)
+    self._update_progress(100)
+    print()
     return tagger, self.data
 
 
@@ -445,41 +489,41 @@ def benchmark_loghub2():
         #     "st": 0.7,
         #     "depth": 6,
         # },
-        "HealthApp": {
-            "log_file": "HealthApp/HealthApp_full.log",
-            "log_format": "<Time>\|<Component>\|<Pid>\|<Content>",
-            "regex": [],
-            "st": 0.2,
-            "depth": 4,
-        },
-        "Hadoop": {
-            "log_file": "Hadoop/Hadoop_full.log",
-            "log_format": "<Date> <Time> <Level> \[<Process>\] <Component>: <Content>",
-            "regex": [r"(\d+\.){3}\d+"],
-            "st": 0.5,
-            "depth": 4,
-        },
-        "HPC": {
-            "log_file": "HPC/HPC_full.log",
-            "log_format": "<LogId> <Node> <Component> <State> <Time> <Flag> <Content>",
-            "regex": [r"=\d+"],
-            "st": 0.5,
-            "depth": 4,
-        },
-        "OpenStack": {
-            "log_file": "OpenStack/OpenStack_full.log",
-            "log_format": "<Logrecord> <Date> <Time> <Pid> <Level> <Component> \[<ADDR>\] <Content>",
-            "regex": [r"((\d+\.){3}\d+,?)+", r"/.+?\s", r"\d+"],
-            "st": 0.5,
-            "depth": 5,
-        },
-        "OpenSSH": {
-            "log_file": "OpenSSH/OpenSSH_full.log",
-            "log_format": "<Date> <Day> <Time> <Component> sshd\[<Pid>\]: <Content>",
-            "regex": [r"(\d+\.){3}\d+", r"([\w-]+\.){2,}[\w-]+"],
-            "st": 0.6,
-            "depth": 5,
-        },
+        # "HealthApp": {
+        #     "log_file": "HealthApp/HealthApp_full.log",
+        #     "log_format": "<Time>\|<Component>\|<Pid>\|<Content>",
+        #     "regex": [],
+        #     "st": 0.2,
+        #     "depth": 4,
+        # },
+        # "Hadoop": {
+        #     "log_file": "Hadoop/Hadoop_full.log",
+        #     "log_format": "<Date> <Time> <Level> \[<Process>\] <Component>: <Content>",
+        #     "regex": [r"(\d+\.){3}\d+"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "HPC": {
+        #     "log_file": "HPC/HPC_full.log",
+        #     "log_format": "<LogId> <Node> <Component> <State> <Time> <Flag> <Content>",
+        #     "regex": [r"=\d+"],
+        #     "st": 0.5,
+        #     "depth": 4,
+        # },
+        # "OpenStack": {
+        #     "log_file": "OpenStack/OpenStack_full.log",
+        #     "log_format": "<Logrecord> <Date> <Time> <Pid> <Level> <Component> \[<ADDR>\] <Content>",
+        #     "regex": [r"((\d+\.){3}\d+,?)+", r"/.+?\s", r"\d+"],
+        #     "st": 0.5,
+        #     "depth": 5,
+        # },
+        # "OpenSSH": {
+        #     "log_file": "OpenSSH/OpenSSH_full.log",
+        #     "log_format": "<Date> <Day> <Time> <Component> sshd\[<Pid>\]: <Content>",
+        #     "regex": [r"(\d+\.){3}\d+", r"([\w-]+\.){2,}[\w-]+"],
+        #     "st": 0.6,
+        #     "depth": 5,
+        # },
         # "BGL": {
         #     "log_file": "BGL/BGL_full.log",
         #     "log_format": "<Label> <Timestamp> <Date> <Node> <Time> <NodeRepeat> <Type> <Component> <Level> <Content>",
@@ -487,27 +531,27 @@ def benchmark_loghub2():
         #     "st": 0.5,
         #     "depth": 4,
         # },
-        # "HDFS": {
-        #     "log_file": "HDFS/HDFS_full.log",
-        #     "log_format": "<Date> <Time> <Pid> <Level> <Component>: <Content>",
-        #     "regex": [r"blk_-?\d+", r"(\d+\.){3}\d+(:\d+)?"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
-        # "Spark": {
-        #     "log_file": "Spark/Spark_full.log",
-        #     "log_format": "<Date> <Time> <Level> <Component>: <Content>",
-        #     "regex": [r"(\d+\.){3}\d+", r"\b[KGTM]?B\b", r"([\w-]+\.){2,}[\w-]+"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
-        # "Thunderbird": {
-        #     "log_file": "Thunderbird/Thunderbird_full.log",
-        #     "log_format": "<Label> <Timestamp> <Date> <User> <Month> <Day> <Time> <Location> <Component>(\[<PID>\])?: <Content>",
-        #     "regex": [r"(\d+\.){3}\d+"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
+        "HDFS": {
+            "log_file": "HDFS/HDFS_full.log",
+            "log_format": "<Date> <Time> <Pid> <Level> <Component>: <Content>",
+            "regex": [r"blk_-?\d+", r"(\d+\.){3}\d+(:\d+)?"],
+            "st": 0.5,
+            "depth": 4,
+        },
+        "Spark": {
+            "log_file": "Spark/Spark_full.log",
+            "log_format": "<Date> <Time> <Level> <Component>: <Content>",
+            "regex": [r"(\d+\.){3}\d+", r"\b[KGTM]?B\b", r"([\w-]+\.){2,}[\w-]+"],
+            "st": 0.5,
+            "depth": 4,
+        },
+        "Thunderbird": {
+            "log_file": "Thunderbird/Thunderbird_full.log",
+            "log_format": "<Label> <Timestamp> <Date> <User> <Month> <Day> <Time> <Location> <Component>(\[<PID>\])?: <Content>",
+            "regex": [r"(\d+\.){3}\d+"],
+            "st": 0.5,
+            "depth": 4,
+        },
     }
     
     run_benchmark(input_dir, output_dir, benchmark_settings, result_file="Logscan_loghub2_benchmark_result.csv")
