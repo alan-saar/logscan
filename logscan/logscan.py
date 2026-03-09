@@ -100,7 +100,7 @@ class LogScan:
     sys.stdout.write(f'\r[{bar_str}] {percent}%')
     sys.stdout.flush()
 
-  def __init__(self, logdata: list, header: bool, header_regex = None):
+  def __init__(self, logdata: list, header: bool, header_regex = None, regex_list = None):
     """
     Initializes the LogScan instance.
 
@@ -108,9 +108,19 @@ class LogScan:
         logdata (list): List of raw log strings.
         header (bool): Whether to strip headers using regex.
         header_regex (str, optional): Regex pattern for header removal.
+        regex_list (list, optional): List of generic regex strings to mask variables before clustering.
     """
     # print('- Logscan v1.0')
     self._update_progress(0)
+    
+    if regex_list:
+        processed_data = []
+        for log in logdata:
+            for rgx in regex_list:
+                log = re.sub(rgx, '<*>', log)
+            processed_data.append(log)
+        logdata = processed_data
+        
     if header:
       # print('-- Header Extraction')
       loglist= [re.sub(f'{header_regex}', '', log) for log in logdata]
@@ -295,8 +305,9 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
 
         try:
             test_dataset = pd.read_csv(os.path.join(indir, log_file + "_structured.csv"))
-            log_scan_android = LogScan(list(test_dataset['Content']), header=False)
-            tagger_android, result_dataset = log_scan_android.pipeline()
+            regex_list = setting.get("regex", [])
+            log_scan_dataset = LogScan(list(test_dataset['Content']), header=False, regex_list=regex_list)
+            tagger, result_dataset = log_scan_dataset.pipeline()
             result_dataset['EventId'] = test_dataset['EventId']
             result_dataset.to_csv(os.path.join(output_dir, log_file + "_structured.csv"))
 
@@ -448,89 +459,89 @@ def benchmark_loghub2():
 
     # datasets por ordem de tamanho
     benchmark_settings = {
-        # "Linux": {
-        #     "log_file": "Linux/Linux_full.log",
-        #     "log_format": "<Month> <Date> <Time> <Level> <Component>(\[<PID>\])?: <Content>",
-        #     "regex": [r"(\d+\.){3}\d+", r"\d{2}:\d{2}:\d{2}"],
-        #     "st": 0.39,
-        #     "depth": 6,
-        # },
-        # "Proxifier": {
-        #     "log_file": "Proxifier/Proxifier_full.log",
-        #     "log_format": "\[<Time>\] <Program> - <Content>",
-        #     "regex": [
-        #         r"<\d+\ssec",
-        #         r"([\w-]+\.)+[\w-]+(:\d+)?",
-        #         r"\d{2}:\d{2}(:\d{2})*",
-        #         r"[KGTM]B",
-        #     ],
-        #     "st": 0.6,
-        #     "depth": 3,
-        #     "max": 1000
-        # },
-        # "Apache": {
-        #     "log_file": "Apache/Apache_full.log",
-        #     "log_format": "\[<Time>\] \[<Level>\] <Content>",
-        #     "regex": [r"(\d+\.){3}\d+"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
-        # "Zookeeper": {
-        #     "log_file": "Zookeeper/Zookeeper_full.log",
-        #     "log_format": "<Date> <Time> - <Level>  \[<Node>:<Component>@<Id>\] - <Content>",
-        #     "regex": [r"(/|)(\d+\.){3}\d+(:\d+)?"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
-        # "Mac": {
-        #     "log_file": "Mac/Mac_full.log",
-        #     "log_format": "<Month>  <Date> <Time> <User> <Component>\[<PID>\]( \(<Address>\))?: <Content>",
-        #     "regex": [r"([\w-]+\.){2,}[\w-]+"],
-        #     "st": 0.7,
-        #     "depth": 6,
-        # },
-        # "HealthApp": {
-        #     "log_file": "HealthApp/HealthApp_full.log",
-        #     "log_format": "<Time>\|<Component>\|<Pid>\|<Content>",
-        #     "regex": [],
-        #     "st": 0.2,
-        #     "depth": 4,
-        # },
-        # "Hadoop": {
-        #     "log_file": "Hadoop/Hadoop_full.log",
-        #     "log_format": "<Date> <Time> <Level> \[<Process>\] <Component>: <Content>",
-        #     "regex": [r"(\d+\.){3}\d+"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
-        # "HPC": {
-        #     "log_file": "HPC/HPC_full.log",
-        #     "log_format": "<LogId> <Node> <Component> <State> <Time> <Flag> <Content>",
-        #     "regex": [r"=\d+"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
-        # "OpenStack": {
-        #     "log_file": "OpenStack/OpenStack_full.log",
-        #     "log_format": "<Logrecord> <Date> <Time> <Pid> <Level> <Component> \[<ADDR>\] <Content>",
-        #     "regex": [r"((\d+\.){3}\d+,?)+", r"/.+?\s", r"\d+"],
-        #     "st": 0.5,
-        #     "depth": 5,
-        # },
-        # "OpenSSH": {
-        #     "log_file": "OpenSSH/OpenSSH_full.log",
-        #     "log_format": "<Date> <Day> <Time> <Component> sshd\[<Pid>\]: <Content>",
-        #     "regex": [r"(\d+\.){3}\d+", r"([\w-]+\.){2,}[\w-]+"],
-        #     "st": 0.6,
-        #     "depth": 5,
-        # },
-        # "BGL": {
-        #     "log_file": "BGL/BGL_full.log",
-        #     "log_format": "<Label> <Timestamp> <Date> <Node> <Time> <NodeRepeat> <Type> <Component> <Level> <Content>",
-        #     "regex": [r"core\.\d+"],
-        #     "st": 0.5,
-        #     "depth": 4,
-        # },
+        "Linux": {
+            "log_file": "Linux/Linux_full.log",
+            "log_format": "<Month> <Date> <Time> <Level> <Component>(\[<PID>\])?: <Content>",
+            "regex": [r"(\d+\.){3}\d+", r"\d{2}:\d{2}:\d{2}"],
+            "st": 0.39,
+            "depth": 6,
+        },
+        "Proxifier": {
+            "log_file": "Proxifier/Proxifier_full.log",
+            "log_format": "\[<Time>\] <Program> - <Content>",
+            "regex": [
+                r"<\d+\ssec",
+                r"([\w-]+\.)+[\w-]+(:\d+)?",
+                r"\d{2}:\d{2}(:\d{2})*",
+                r"[KGTM]B",
+            ],
+            "st": 0.6,
+            "depth": 3,
+            "max": 1000
+        },
+        "Apache": {
+            "log_file": "Apache/Apache_full.log",
+            "log_format": "\[<Time>\] \[<Level>\] <Content>",
+            "regex": [r"(\d+\.){3}\d+"],
+            "st": 0.5,
+            "depth": 4,
+        },
+        "Zookeeper": {
+            "log_file": "Zookeeper/Zookeeper_full.log",
+            "log_format": "<Date> <Time> - <Level>  \[<Node>:<Component>@<Id>\] - <Content>",
+            "regex": [r"(/|)(\d+\.){3}\d+(:\d+)?"],
+            "st": 0.5,
+            "depth": 4,
+        },
+        "Mac": {
+            "log_file": "Mac/Mac_full.log",
+            "log_format": "<Month>  <Date> <Time> <User> <Component>\[<PID>\]( \(<Address>\))?: <Content>",
+            "regex": [r"([\w-]+\.){2,}[\w-]+"],
+            "st": 0.7,
+            "depth": 6,
+        },
+        "HealthApp": {
+            "log_file": "HealthApp/HealthApp_full.log",
+            "log_format": "<Time>\|<Component>\|<Pid>\|<Content>",
+            "regex": [],
+            "st": 0.2,
+            "depth": 4,
+        },
+        "Hadoop": {
+            "log_file": "Hadoop/Hadoop_full.log",
+            "log_format": "<Date> <Time> <Level> \[<Process>\] <Component>: <Content>",
+            "regex": [r"(\d+\.){3}\d+"],
+            "st": 0.5,
+            "depth": 4,
+        },
+        "HPC": {
+            "log_file": "HPC/HPC_full.log",
+            "log_format": "<LogId> <Node> <Component> <State> <Time> <Flag> <Content>",
+            "regex": [r"=\d+"],
+            "st": 0.5,
+            "depth": 4,
+        },
+        "OpenStack": {
+            "log_file": "OpenStack/OpenStack_full.log",
+            "log_format": "<Logrecord> <Date> <Time> <Pid> <Level> <Component> \[<ADDR>\] <Content>",
+            "regex": [r"((\d+\.){3}\d+,?)+", r"/.+?\s", r"\d+"],
+            "st": 0.5,
+            "depth": 5,
+        },
+        "OpenSSH": {
+            "log_file": "OpenSSH/OpenSSH_full.log",
+            "log_format": "<Date> <Day> <Time> <Component> sshd\[<Pid>\]: <Content>",
+            "regex": [r"(\d+\.){3}\d+", r"([\w-]+\.){2,}[\w-]+"],
+            "st": 0.6,
+            "depth": 5,
+        },
+        "BGL": {
+            "log_file": "BGL/BGL_full.log",
+            "log_format": "<Label> <Timestamp> <Date> <Node> <Time> <NodeRepeat> <Type> <Component> <Level> <Content>",
+            "regex": [r"core\.\d+"],
+            "st": 0.5,
+            "depth": 4,
+        },
         "HDFS": {
             "log_file": "HDFS/HDFS_full.log",
             "log_format": "<Date> <Time> <Pid> <Level> <Component>: <Content>",
