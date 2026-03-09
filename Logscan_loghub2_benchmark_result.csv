@@ -1,2 +1,12 @@
 Dataset,Accuracy
-Linux,0.222232
+Linux,0.708750
+Proxifier,0.993715
+Apache,0.535149
+Zookeeper,0.999744
+Mac,0.964302
+HealthApp,1.000000
+Hadoop,0.973093
+HPC,0.995098
+OpenStack,0.741784
+OpenSSH,0.453141
+BGL,0.947330
