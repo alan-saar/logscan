@@ -1,0 +1,101 @@
+LineId,Content,EventId,EventTemplate
+1,loaded properties from hadoop-metrics2.properties,E188,loaded properties from <*>
+2,Scheduled snapshot period at 10 second(s).,E98,Scheduled snapshot period at <*> second(s).
+3,MapTask metrics system started,E189,<*> metrics system started
+4,Executing with tokens:,E187,Executing with tokens:
+5,"Kind: mapreduce.job, Service: job_1445087491445_0005, Ident: (org.apache.hadoop.mapreduce.security.token.JobTokenIdentifier@7f0eb4b4)",E174,"Kind: <*>, Service: <*>, Ident: (<*>)"
+6,Sleeping for 0ms before retrying again. Got null now.,E76,Sleeping for <*> before retrying again. Got null now.
+7,mapreduce.cluster.local.dir for child: /tmp/hadoop-msrabi/nm-local-dir/usercache/msrabi/appcache/application_1445087491445_0005,E93,mapreduce.cluster.local.dir for child: <*>
+8,"session.id is deprecated. Instead, use dfs.metrics.session-id",E165,"<*> is deprecated. Instead, use <*>"
+9,ProcfsBasedProcessTree currently is supported only on Linux.,E47,ProcfsBasedProcessTree currently is supported only on Linux.
+10,Using ResourceCalculatorProcessTree : org.apache.hadoop.yarn.util.WindowsBasedProcessTree@6ad3381f,E96,Using ResourceCalculatorProcessTree : <*>
+11,Processing split: hdfs://msra-sa-41:9000/wordcount2.txt:402653184+134217728,E200,Processing split: <*>+<*>
+12,(EQUATOR) 0 kvi 26214396(104857584),E217,(EQUATOR) <*> kvi <*>(<*>)
+13,mapreduce.task.io.sort.mb: 100,E142,mapreduce.task.io.sort.mb: <*>
+14,soft limit at 83886080,E223,soft limit at <*>
+15,bufstart = 0; bufvoid = 104857600,E198,bufstart = <*>; bufvoid = <*>
+16,kvstart = 26214396; length = 6553600,E209,kvstart = <*>; length = <*>
+17,Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer,E155,Map output collector class = <*>$<*>
+18,Spilling map output,E201,Spilling map output
+19,bufstart = 0; bufend = 34171787; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+20,kvstart = 26214396(104857584); kvend = 13785828(55143312); length = 12428569/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+21,(EQUATOR) 44657541 kvi 11164380(44657520),E217,(EQUATOR) <*> kvi <*>(<*>)
+22,Finished spill 0,E218,Finished spill <*>
+23,(RESET) equator 44657541 kv 11164380(44657520) kvi 8542952(34171808),E176,(RESET) equator <*> kv <*>(<*>) kvi <*>(<*>)
+24,Spilling map output,E201,Spilling map output
+25,bufstart = 44657541; bufend = 78831461; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+26,kvstart = 11164380(44657520); kvend = 24950744(99802976); length = 12428037/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+27,(EQUATOR) 89317210 kvi 22329296(89317184),E217,(EQUATOR) <*> kvi <*>(<*>)
+28,Finished spill 1,E218,Finished spill <*>
+29,(RESET) equator 89317210 kv 22329296(89317184) kvi 19707872(78831488),E176,(RESET) equator <*> kv <*>(<*>) kvi <*>(<*>)
+30,Spilling map output,E201,Spilling map output
+31,bufstart = 89317210; bufend = 18635516; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+32,kvstart = 22329296(89317184); kvend = 9901760(39607040); length = 12427537/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+33,(EQUATOR) 29121270 kvi 7280312(29121248),E217,(EQUATOR) <*> kvi <*>(<*>)
+34,Finished spill 2,E218,Finished spill <*>
+35,(RESET) equator 29121270 kv 7280312(29121248) kvi 4658884(18635536),E176,(RESET) equator <*> kv <*>(<*>) kvi <*>(<*>)
+36,Spilling map output,E201,Spilling map output
+37,bufstart = 29121270; bufend = 63298571; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+38,kvstart = 7280312(29121248); kvend = 21067524(84270096); length = 12427189/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+39,(EQUATOR) 73784325 kvi 18446076(73784304),E217,(EQUATOR) <*> kvi <*>(<*>)
+40,Finished spill 3,E218,Finished spill <*>
+41,(RESET) equator 73784325 kv 18446076(73784304) kvi 15824648(63298592),E176,(RESET) equator <*> kv <*>(<*>) kvi <*>(<*>)
+42,Spilling map output,E201,Spilling map output
+43,bufstart = 73784325; bufend = 3101826; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+44,kvstart = 18446076(73784304); kvend = 6018336(24073344); length = 12427741/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+45,(EQUATOR) 13587577 kvi 3396888(13587552),E217,(EQUATOR) <*> kvi <*>(<*>)
+46,Finished spill 4,E218,Finished spill <*>
+47,(RESET) equator 13587577 kv 3396888(13587552) kvi 775464(3101856),E176,(RESET) equator <*> kv <*>(<*>) kvi <*>(<*>)
+48,Spilling map output,E201,Spilling map output
+49,bufstart = 13587577; bufend = 47763869; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+50,kvstart = 3396888(13587552); kvend = 17183848(68735392); length = 12427441/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+51,(EQUATOR) 58249622 kvi 14562400(58249600),E217,(EQUATOR) <*> kvi <*>(<*>)
+52,Finished spill 5,E218,Finished spill <*>
+53,I/O error constructing remote block reader.,E89,I/O error constructing remote block reader.
+54,"Failed to connect to /10.86.169.121:50010 for block, add to deadNodes and continue. java.net.ConnectException: Connection timed out: no further information",E19,"Failed to connect to <*> for block, add to deadNodes and continue. java.net.ConnectException: Connection timed out: no further information"
+55,Successfully connected to /10.190.173.170:50010 for BP-1347369012-10.190.173.170-1444972147527:blk_1073742826_2022,E143,Successfully connected to <*> for <*>
+56,(RESET) equator 58249622 kv 14562400(58249600) kvi 12516560(50066240),E176,(RESET) equator <*> kv <*>(<*>) kvi <*>(<*>)
+57,Starting flush of map output,E156,Starting flush of map output
+58,Spilling map output,E201,Spilling map output
+59,bufstart = 58249622; bufend = 63876500; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+60,kvstart = 14562400(58249600); kvend = 12515968(50063872); length = 2046433/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+61,Finished spill 6,E218,Finished spill <*>
+62,Merging 7 sorted segments,E182,Merging <*> sorted segments
+63,"Down to the last merge-pass, with 7 segments left of total size: 228411640 bytes",E42,"Down to the last merge-pass, with <*> segments left of total size: <*> bytes"
+64,Task:attempt_1445087491445_0005_m_000004_0 is done. And is in the process of committing,E79,Task:<*> is done. And is in the process of committing
+65,Task 'attempt_1445087491445_0005_m_000004_0' done.,E224,Task <*> done.
+66,loaded properties from hadoop-metrics2.properties,E188,loaded properties from <*>
+67,Scheduled snapshot period at 10 second(s).,E98,Scheduled snapshot period at <*> second(s).
+68,MapTask metrics system started,E189,<*> metrics system started
+69,Executing with tokens:,E187,Executing with tokens:
+70,"Kind: mapreduce.job, Service: job_1445087491445_0005, Ident: (org.apache.hadoop.mapreduce.security.token.JobTokenIdentifier@67b65d47)",E174,"Kind: <*>, Service: <*>, Ident: (<*>)"
+71,Sleeping for 0ms before retrying again. Got null now.,E76,Sleeping for <*> before retrying again. Got null now.
+72,mapreduce.cluster.local.dir for child: /tmp/hadoop-msrabi/nm-local-dir/usercache/msrabi/appcache/application_1445087491445_0005,E93,mapreduce.cluster.local.dir for child: <*>
+73,"session.id is deprecated. Instead, use dfs.metrics.session-id",E165,"<*> is deprecated. Instead, use <*>"
+74,ProcfsBasedProcessTree currently is supported only on Linux.,E47,ProcfsBasedProcessTree currently is supported only on Linux.
+75,Using ResourceCalculatorProcessTree : org.apache.hadoop.yarn.util.WindowsBasedProcessTree@14c86ad8,E96,Using ResourceCalculatorProcessTree : <*>
+76,Processing split: hdfs://msra-sa-41:9000/wordcount2.txt:939524096+134217728,E200,Processing split: <*>+<*>
+77,(EQUATOR) 0 kvi 26214396(104857584),E217,(EQUATOR) <*> kvi <*>(<*>)
+78,mapreduce.task.io.sort.mb: 100,E142,mapreduce.task.io.sort.mb: <*>
+79,soft limit at 83886080,E223,soft limit at <*>
+80,bufstart = 0; bufvoid = 104857600,E198,bufstart = <*>; bufvoid = <*>
+81,kvstart = 26214396; length = 6553600,E209,kvstart = <*>; length = <*>
+82,Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer,E155,Map output collector class = <*>$<*>
+83,I/O error constructing remote block reader.,E89,I/O error constructing remote block reader.
+84,"Failed to connect to /10.86.169.121:50010 for block, add to deadNodes and continue. java.net.ConnectException: Connection refused: no further information",E20,"Failed to connect to <*> for block, add to deadNodes and continue. java.net.ConnectException: Connection refused: no further information"
+85,Successfully connected to /10.190.173.170:50010 for BP-1347369012-10.190.173.170-1444972147527:blk_1073742829_2025,E143,Successfully connected to <*> for <*>
+86,Spilling map output,E201,Spilling map output
+87,bufstart = 0; bufend = 34173924; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+88,kvstart = 26214396(104857584); kvend = 13786364(55145456); length = 12428033/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+89,(EQUATOR) 44659682 kvi 11164916(44659664),E217,(EQUATOR) <*> kvi <*>(<*>)
+90,Finished spill 0,E218,Finished spill <*>
+91,(RESET) equator 44659682 kv 11164916(44659664) kvi 8543488(34173952),E176,(RESET) equator <*> kv <*>(<*>) kvi <*>(<*>)
+92,Spilling map output,E201,Spilling map output
+93,bufstart = 44659682; bufend = 78832442; bufvoid = 104857600,E146,bufstart = <*>; bufend = <*>; bufvoid = <*>
+94,kvstart = 11164916(44659664); kvend = 24950992(99803968); length = 12428325/6553600,E130,kvstart = <*>(<*>); kvend = <*>(<*>); length = <*>
+95,(EQUATOR) 89318197 kvi 22329544(89318176),E217,(EQUATOR) <*> kvi <*>(<*>)
+96,loaded properties from hadoop-metrics2.properties,E188,loaded properties from <*>
+97,Scheduled snapshot period at 10 second(s).,E98,Scheduled snapshot period at <*> second(s).
+98,MapTask metrics system started,E189,<*> metrics system started
+99,Executing with tokens:,E187,Executing with tokens:
+100,"Kind: mapreduce.job, Service: job_1445087491445_0005, Ident: (org.apache.hadoop.mapreduce.security.token.JobTokenIdentifier@6d9532fe)",E174,"Kind: <*>, Service: <*>, Ident: (<*>)"

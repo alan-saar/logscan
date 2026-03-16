@@ -1,0 +1,101 @@
+LineId,Content,EventId,EventTemplate
+1,"Registered signal handlers for [TERM, HUP, INT]",E164,Registered signal handlers for <*>
+2,"Changing view acls to: yarn,curi",E200,"Changing view acls to: <*>,<*>"
+3,"Changing modify acls to: yarn,curi",E191,"Changing modify acls to: <*>,<*>"
+4,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, curi); users with modify permissions: Set(yarn, curi)",E10,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(<*>, <*>); users with modify permissions: Set(<*>, <*>)"
+5,"Changing view acls to: yarn,curi",E200,"Changing view acls to: <*>,<*>"
+6,"Changing modify acls to: yarn,curi",E191,"Changing modify acls to: <*>,<*>"
+7,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, curi); users with modify permissions: Set(yarn, curi)",E10,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(<*>, <*>); users with modify permissions: Set(<*>, <*>)"
+8,Slf4jLogger started,E208,Slf4jLogger started
+9,Starting remoting,E221,Starting remoting
+10,Remoting started; listening on addresses :[akka.tcp://sparkExecutorActorSystem@mesos-master-1:40424],E96,Remoting started; listening on addresses :[<*>]
+11,Successfully started service 'sparkExecutorActorSystem' on port 40424.,E114,Successfully started service <*> on port <*>.
+12,Created local directory at /opt/hdfs/nodemanager/usercache/curi/appcache/application_1485248649253_0020/blockmgr-416b8a6f-4ed7-49bb-b2f3-71d51930d48d,E185,Created local directory at <*>
+13,MemoryStore started with capacity 14.2 GB,E143,MemoryStore started with capacity <*>
+14,Connecting to driver: spark://CoarseGrainedScheduler@10.10.34.23:47891,E160,Connecting to driver: spark://<*>
+15,Successfully registered with driver,E128,Successfully registered with driver
+16,Starting executor ID 6 on host mesos-master-1,E182,Starting executor ID <*> on host <*>
+17,Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 48869.,E114,Successfully started service <*> on port <*>.
+18,Server created on 48869,E224,Server created on <*>
+19,Trying to register BlockManager,E158,Trying to register BlockManager
+20,Registered BlockManager,E188,Registered BlockManager
+21,Got assigned task 0,E225,Got assigned task <*>
+22,Got assigned task 1,E225,Got assigned task <*>
+23,Running task 0.0 in stage 0.0 (TID 0),E186,Running task <*> in stage <*> (TID <*>)
+24,Running task 1.0 in stage 0.0 (TID 1),E186,Running task <*> in stage <*> (TID <*>)
+25,Started reading broadcast variable 1,E136,Started reading broadcast variable <*>
+26,"Block broadcast_1_piece0 stored as bytes in memory (estimated size 3.7 KB, free 3.7 KB)",E73,"Block <*> stored as bytes in memory (estimated size <*>, free <*>)"
+27,Reading broadcast variable 1 took 120 ms,E146,Reading broadcast variable <*> took <*> ms
+28,"Block broadcast_1 stored as values in memory (estimated size 6.0 KB, free 9.7 KB)",E69,"Block <*> stored as values in memory (estimated size <*>, free <*>)"
+29,Input split: hdfs://10.10.34.11:9000/user/niuxy/com-amazon.ungraph.txt:0+6292942,E231,Input split: <*>+<*>
+30,Input split: hdfs://10.10.34.11:9000/user/niuxy/com-amazon.ungraph.txt:6292942+6292942,E231,Input split: <*>+<*>
+31,Started reading broadcast variable 0,E136,Started reading broadcast variable <*>
+32,"Block broadcast_0_piece0 stored as bytes in memory (estimated size 21.4 KB, free 31.1 KB)",E73,"Block <*> stored as bytes in memory (estimated size <*>, free <*>)"
+33,Reading broadcast variable 0 took 20 ms,E146,Reading broadcast variable <*> took <*> ms
+34,"Block broadcast_0 stored as values in memory (estimated size 281.6 KB, free 312.8 KB)",E69,"Block <*> stored as values in memory (estimated size <*>, free <*>)"
+35,"mapred.tip.id is deprecated. Instead, use mapreduce.task.id",E181,"<*> is deprecated. Instead, use <*>"
+36,"mapred.task.id is deprecated. Instead, use mapreduce.task.attempt.id",E181,"<*> is deprecated. Instead, use <*>"
+37,"mapred.task.is.map is deprecated. Instead, use mapreduce.task.ismap",E181,"<*> is deprecated. Instead, use <*>"
+38,"mapred.task.partition is deprecated. Instead, use mapreduce.task.partition",E181,"<*> is deprecated. Instead, use <*>"
+39,"mapred.job.id is deprecated. Instead, use mapreduce.job.id",E181,"<*> is deprecated. Instead, use <*>"
+40,"Times: total = 4458, boot = 536, init = 83, finish = 3839",E129,"Times: total = <*>, boot = <*>, init = <*>, finish = <*>"
+41,Finished task 1.0 in stage 0.0 (TID 1). 14372091 bytes result sent to driver,E66,Finished task <*> in stage <*> (TID <*>). <*> bytes result sent to driver
+42,"Times: total = 4715, boot = 571, init = 102, finish = 4042",E129,"Times: total = <*>, boot = <*>, init = <*>, finish = <*>"
+43,Finished task 0.0 in stage 0.0 (TID 0). 14332673 bytes result sent to driver,E66,Finished task <*> in stage <*> (TID <*>). <*> bytes result sent to driver
+44,Driver commanded a shutdown,E176,Driver commanded a shutdown
+45,MemoryStore cleared,E209,MemoryStore cleared
+46,BlockManager stopped,E202,BlockManager stopped
+47,An unknown (mesos-slave-13:47891) driver disconnected.,E144,An unknown (<*>) driver disconnected.
+48,Driver 10.10.34.23:47891 disassociated! Shutting down.,E119,Driver <*> disassociated! Shutting down.
+49,Shutdown hook called,E210,Shutdown hook called
+50,Shutting down remote daemon.,E171,Shutting down remote daemon.
+51,"Registered signal handlers for [TERM, HUP, INT]",E164,Registered signal handlers for <*>
+52,"Changing view acls to: yarn,curi",E200,"Changing view acls to: <*>,<*>"
+53,"Changing modify acls to: yarn,curi",E191,"Changing modify acls to: <*>,<*>"
+54,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, curi); users with modify permissions: Set(yarn, curi)",E10,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(<*>, <*>); users with modify permissions: Set(<*>, <*>)"
+55,"Changing view acls to: yarn,curi",E200,"Changing view acls to: <*>,<*>"
+56,"Changing modify acls to: yarn,curi",E191,"Changing modify acls to: <*>,<*>"
+57,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, curi); users with modify permissions: Set(yarn, curi)",E10,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(<*>, <*>); users with modify permissions: Set(<*>, <*>)"
+58,Slf4jLogger started,E208,Slf4jLogger started
+59,Starting remoting,E221,Starting remoting
+60,Remoting started; listening on addresses :[akka.tcp://sparkExecutorActorSystem@mesos-slave-18:49572],E96,Remoting started; listening on addresses :[<*>]
+61,Successfully started service 'sparkExecutorActorSystem' on port 49572.,E114,Successfully started service <*> on port <*>.
+62,Created local directory at /opt/hdfs/nodemanager/usercache/curi/appcache/application_1485248649253_0020/blockmgr-87d182fa-5de1-4948-b453-baeb6f07c2c0,E185,Created local directory at <*>
+63,MemoryStore started with capacity 14.2 GB,E143,MemoryStore started with capacity <*>
+64,Connecting to driver: spark://CoarseGrainedScheduler@10.10.34.23:47891,E160,Connecting to driver: spark://<*>
+65,Successfully registered with driver,E128,Successfully registered with driver
+66,Starting executor ID 4 on host mesos-slave-18,E182,Starting executor ID <*> on host <*>
+67,Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 43488.,E114,Successfully started service <*> on port <*>.
+68,Server created on 43488,E224,Server created on <*>
+69,Trying to register BlockManager,E158,Trying to register BlockManager
+70,Registered BlockManager,E188,Registered BlockManager
+71,Driver commanded a shutdown,E176,Driver commanded a shutdown
+72,MemoryStore cleared,E209,MemoryStore cleared
+73,BlockManager stopped,E202,BlockManager stopped
+74,An unknown (mesos-slave-13:47891) driver disconnected.,E144,An unknown (<*>) driver disconnected.
+75,Driver 10.10.34.23:47891 disassociated! Shutting down.,E119,Driver <*> disassociated! Shutting down.
+76,Shutdown hook called,E210,Shutdown hook called
+77,"Registered signal handlers for [TERM, HUP, INT]",E164,Registered signal handlers for <*>
+78,"Changing view acls to: yarn,curi",E200,"Changing view acls to: <*>,<*>"
+79,"Changing modify acls to: yarn,curi",E191,"Changing modify acls to: <*>,<*>"
+80,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, curi); users with modify permissions: Set(yarn, curi)",E10,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(<*>, <*>); users with modify permissions: Set(<*>, <*>)"
+81,"Changing view acls to: yarn,curi",E200,"Changing view acls to: <*>,<*>"
+82,"Changing modify acls to: yarn,curi",E191,"Changing modify acls to: <*>,<*>"
+83,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(yarn, curi); users with modify permissions: Set(yarn, curi)",E10,"SecurityManager: authentication disabled; ui acls disabled; users with view permissions: Set(<*>, <*>); users with modify permissions: Set(<*>, <*>)"
+84,Slf4jLogger started,E208,Slf4jLogger started
+85,Starting remoting,E221,Starting remoting
+86,Remoting started; listening on addresses :[akka.tcp://sparkExecutorActorSystem@mesos-slave-28:54809],E96,Remoting started; listening on addresses :[<*>]
+87,Successfully started service 'sparkExecutorActorSystem' on port 54809.,E114,Successfully started service <*> on port <*>.
+88,Created local directory at /opt/hdfs/nodemanager/usercache/curi/appcache/application_1485248649253_0020/blockmgr-71b6da50-35bf-4d01-b8c0-d9535bafc52d,E185,Created local directory at <*>
+89,MemoryStore started with capacity 14.2 GB,E143,MemoryStore started with capacity <*>
+90,Connecting to driver: spark://CoarseGrainedScheduler@10.10.34.23:47891,E160,Connecting to driver: spark://<*>
+91,Successfully registered with driver,E128,Successfully registered with driver
+92,Starting executor ID 2 on host mesos-slave-28,E182,Starting executor ID <*> on host <*>
+93,Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 39003.,E114,Successfully started service <*> on port <*>.
+94,Server created on 39003,E224,Server created on <*>
+95,Trying to register BlockManager,E158,Trying to register BlockManager
+96,Registered BlockManager,E188,Registered BlockManager
+97,Driver commanded a shutdown,E176,Driver commanded a shutdown
+98,MemoryStore cleared,E209,MemoryStore cleared
+99,BlockManager stopped,E202,BlockManager stopped
+100,An unknown (mesos-slave-13:47891) driver disconnected.,E144,An unknown (<*>) driver disconnected.

@@ -1,0 +1,101 @@
+LineId,Content,EventId,EventTemplate
+1,Reading configuration from: /etc/zookeeper/conf/zoo.cfg,E57,Reading configuration from: <*>
+2,Defaulting to majority quorums,E46,Defaulting to majority quorums
+3,autopurge.snapRetainCount set to 3,E35,autopurge.snapRetainCount set to <*>
+4,autopurge.purgeInterval set to 0,E44,autopurge.purgeInterval set to <*>
+5,Purge task is not scheduled.,E60,Purge task is not scheduled.
+6,Starting quorum peer,E71,Starting quorum peer
+7,binding to port 0.0.0.0/0.0.0.0:2181,E80,binding to port <*>
+8,tickTime set to 2000,E81,tickTime set to <*>
+9,minSessionTimeout set to -1,E65,minSessionTimeout set to <*>
+10,maxSessionTimeout set to -1,E63,maxSessionTimeout set to <*>
+11,initLimit set to 10,E79,initLimit set to <*>
+12,currentEpoch not found! Creating with a reasonable default of 0. This should only happen when you are upgrading your installation,E3,currentEpoch not found! Creating with a reasonable default of <*>. This should only happen when you are upgrading your installation
+13,acceptedEpoch not found! Creating with a reasonable default of 0. This should only happen when you are upgrading your installation,E2,acceptedEpoch not found! Creating with a reasonable default of <*>. This should only happen when you are upgrading your installation
+14,My election bind port: 0.0.0.0/0.0.0.0:3888,E68,My election bind port: <*>
+15,LOOKING,E87,LOOKING
+16,"New election. My id = 1, proposed zxid=0x0",E55,"New election. My id = <*>, proposed <*>"
+17,"Notification: 1 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 1 (n.sid), 0x0 (n.peerEPoch), LOOKING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+18,Cannot open channel to 2 at election address /10.10.34.12:3888,E24,Cannot open channel to <*> at election address <*>
+19,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+20,Cannot open channel to 2 at election address /10.10.34.12:3888,E24,Cannot open channel to <*> at election address <*>
+21,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+22,Notification time out: 400,E67,Notification time out: <*>
+23,Cannot open channel to 2 at election address /10.10.34.12:3888,E24,Cannot open channel to <*> at election address <*>
+24,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+25,Notification time out: 800,E67,Notification time out: <*>
+26,Cannot open channel to 2 at election address /10.10.34.12:3888,E24,Cannot open channel to <*> at election address <*>
+27,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+28,Notification time out: 1600,E67,Notification time out: <*>
+29,Cannot open channel to 2 at election address /10.10.34.12:3888,E24,Cannot open channel to <*> at election address <*>
+30,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+31,Notification time out: 3200,E67,Notification time out: <*>
+32,Cannot open channel to 2 at election address /10.10.34.12:3888,E24,Cannot open channel to <*> at election address <*>
+33,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+34,Notification time out: 6400,E67,Notification time out: <*>
+35,Cannot open channel to 2 at election address /10.10.34.12:3888,E24,Cannot open channel to <*> at election address <*>
+36,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+37,Notification time out: 12800,E67,Notification time out: <*>
+38,Cannot open channel to 2 at election address /10.10.34.12:3888,E24,Cannot open channel to <*> at election address <*>
+39,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+40,Notification time out: 25600,E67,Notification time out: <*>
+41,Received connection request /10.10.34.12:47478,E59,Received connection request <*>
+42,"Notification: 2 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 2 (n.sid), 0x0 (n.peerEPoch), LOOKING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+43,"Notification: 2 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 1 (n.sid), 0x0 (n.peerEPoch), LOOKING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+44,Cannot open channel to 3 at election address /10.10.34.13:3888,E24,Cannot open channel to <*> at election address <*>
+45,FOLLOWING,E86,FOLLOWING
+46,TCP NoDelay set to: true,E73,TCP NoDelay set to: <*>
+47,"Server environment:zookeeper.version=3.4.5--1, built on 06/10/2013 17:26 GMT",E19,"Server environment:zookeeper.version=<*>, built on <*> GMT"
+48,Server environment:host.name=node1,E41,Server environment:host.name=<*>
+49,Server environment:java.version=1.7.0_79,E34,Server environment:java.version=<*>
+50,Server environment:java.vendor=Oracle Corporation,E36,Server environment:java.vendor=<*>
+51,Server environment:java.home=/usr/lib/jvm/java-7-openjdk-amd64/jre,E43,Server environment:java.home=<*>
+52,Server environment:java.class.path=/etc/zookeeper/conf:/usr/share/java/jline.jar:/usr/share/java/log4j-1.2.jar:/usr/share/java/xercesImpl.jar:/usr/share/java/xmlParserAPIs.jar:/usr/share/java/netty.jar:/usr/share/java/slf4j-api.jar:/usr/share/java/slf4j-log4j12.jar:/usr/share/java/zookeeper.jar,E27,Server environment:java.class.path=<*>
+53,Server environment:java.io.tmpdir=/tmp,E29,Server environment:java.io.tmpdir=<*>
+54,Server environment:java.compiler=<NA>,E30,Server environment:java.compiler=<*>
+55,Server environment:os.name=Linux,E54,Server environment:os.name=<*>
+56,Server environment:os.arch=amd64,E53,Server environment:os.arch=<*>
+57,Server environment:os.version=3.16.0-30-generic,E38,Server environment:os.version=<*>
+58,Server environment:user.name=zookeeper,E40,Server environment:user.name=<*>
+59,Server environment:user.home=/var/lib/zookeeper,E42,Server environment:user.home=<*>
+60,Server environment:user.dir=/,E49,Server environment:user.dir=<*>
+61,Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /var/lib/zookeeper/version-2 snapdir /var/lib/zookeeper/version-2,E9,Created server with tickTime <*> minSessionTimeout <*> maxSessionTimeout <*> datadir <*> snapdir <*>
+62,FOLLOWING - LEADER ELECTION TOOK - 46837,E39,FOLLOWING - LEADER ELECTION TOOK - <*>
+63,Getting a diff from the leader 0x0,E58,Getting a diff from the leader <*>
+64,Snapshotting: 0x0 to /var/lib/zookeeper/version-2/snapshot.0,E75,Snapshotting: <*> to <*>
+65,Snapshotting: 0x0 to /var/lib/zookeeper/version-2/snapshot.0,E75,Snapshotting: <*> to <*>
+66,Received connection request /10.10.34.13:57684,E59,Received connection request <*>
+67,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+68,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+69,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+70,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+71,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+72,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+73,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+74,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+75,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+76,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+77,"Notification: 3 (n.leader), 0x0 (n.zxid), 0x1 (n.round), LOOKING (n.state), 3 (n.sid), 0x0 (n.peerEPoch), FOLLOWING (my state)",E4,"Notification: <*> (n.leader), <*> (n.zxid), <*> (n.round), <*> (n.state), <*> (n.sid), <*> (n.peerEPoch), <*> (my state)"
+78,Received connection request /10.10.34.11:45300,E59,Received connection request <*>
+79,"Connection broken for id 188978561024, my id = 1, error =",E28,"Connection broken for id <*>, my id = <*>, error =<*>"
+80,Interrupting SendWorker,E62,Interrupting SendWorker
+81,Interrupted while waiting for message on queue,E20,Interrupted while waiting for message on queue
+82,Send worker leaving thread,E61,Send worker leaving thread
+83,Received connection request /10.10.34.11:45303,E59,Received connection request <*>
+84,Received connection request /10.10.34.11:45304,E59,Received connection request <*>
+85,"Connection broken for id 188978561024, my id = 1, error =",E28,"Connection broken for id <*>, my id = <*>, error =<*>"
+86,Interrupting SendWorker,E62,Interrupting SendWorker
+87,Interrupted while waiting for message on queue,E20,Interrupted while waiting for message on queue
+88,"Connection broken for id 188978561024, my id = 1, error =",E28,"Connection broken for id <*>, my id = <*>, error =<*>"
+89,Interrupting SendWorker,E62,Interrupting SendWorker
+90,Send worker leaving thread,E61,Send worker leaving thread
+91,Received connection request /10.10.34.11:45305,E59,Received connection request <*>
+92,Interrupted while waiting for message on queue,E20,Interrupted while waiting for message on queue
+93,Send worker leaving thread,E61,Send worker leaving thread
+94,"Connection broken for id 188978561024, my id = 1, error =",E28,"Connection broken for id <*>, my id = <*>, error =<*>"
+95,Interrupting SendWorker,E62,Interrupting SendWorker
+96,Interrupted while waiting for message on queue,E20,Interrupted while waiting for message on queue
+97,Send worker leaving thread,E61,Send worker leaving thread
+98,Received connection request /10.10.34.11:45307,E59,Received connection request <*>
+99,"Connection broken for id 188978561024, my id = 1, error =",E28,"Connection broken for id <*>, my id = <*>, error =<*>"
+100,Interrupting SendWorker,E62,Interrupting SendWorker

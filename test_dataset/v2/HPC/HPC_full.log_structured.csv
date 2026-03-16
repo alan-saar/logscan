@@ -1,0 +1,101 @@
+LineId,Content,EventId,EventTemplate
+1,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+2,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+3,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+4,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+5,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+6,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+7,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+8,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+9,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+10,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+11,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+12,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+13,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+14,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+15,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+16,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+17,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+18,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+19,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+20,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+21,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+22,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+23,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+24,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+25,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+26,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+27,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+28,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+29,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+30,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+31,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+32,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+33,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+34,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+35,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+36,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+37,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+38,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+39,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+40,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+41,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+42,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+43,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+44,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+45,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+46,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+47,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+48,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+49,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+50,1 failed to configure resourcemgmt subsystem err = 10,E29,<*> failed to configure resourcemgmt subsystem err = <*>
+51,wait (command 1894),E58,wait (command <*>)
+52,boot (command 1894),E57,boot (command <*>)
+53,wait (command 1893),E58,wait (command <*>)
+54,boot (command 1893),E57,boot (command <*>)
+55,wait (command 1876),E58,wait (command <*>)
+56,boot (command 1876),E57,boot (command <*>)
+57,wait (command 1875),E58,wait (command <*>)
+58,boot (command 1875),E57,boot (command <*>)
+59,wait (command 1874),E58,wait (command <*>)
+60,boot (command 1874),E57,boot (command <*>)
+61,wait (command 1892),E58,wait (command <*>)
+62,wait (command 1892),E58,wait (command <*>)
+63,wait (command 1892),E58,wait (command <*>)
+64,wait (command 1892),E58,wait (command <*>)
+65,boot (command 1892),E57,boot (command <*>)
+66,boot (command 1892),E57,boot (command <*>)
+67,boot (command 1892),E57,boot (command <*>)
+68,boot (command 1892),E57,boot (command <*>)
+69,wait (command 1891),E58,wait (command <*>)
+70,wait (command 1891),E58,wait (command <*>)
+71,wait (command 1891),E58,wait (command <*>)
+72,wait (command 1891),E58,wait (command <*>)
+73,boot (command 1891),E57,boot (command <*>)
+74,boot (command 1891),E57,boot (command <*>)
+75,boot (command 1891),E57,boot (command <*>)
+76,boot (command 1891),E57,boot (command <*>)
+77,wait (command 1873),E58,wait (command <*>)
+78,boot (command 1873),E57,boot (command <*>)
+79,boot (command 1890),E57,boot (command <*>)
+80,boot (command 1890),E57,boot (command <*>)
+81,boot (command 1890),E57,boot (command <*>)
+82,boot (command 1890),E57,boot (command <*>)
+83,halt (command 1889),E56,halt (command <*>)
+84,halt (command 1889),E56,halt (command <*>)
+85,halt (command 1889),E56,halt (command <*>)
+86,halt (command 1888),E56,halt (command <*>)
+87,halt (command 1888),E56,halt (command <*>)
+88,halt (command 1887),E56,halt (command <*>)
+89,halt (command 1887),E56,halt (command <*>)
+90,halt (command 1887),E56,halt (command <*>)
+91,halt (command 1887),E56,halt (command <*>)
+92,halt (command 1887),E56,halt (command <*>)
+93,halt (command 1887),E56,halt (command <*>)
+94,halt (command 1887),E56,halt (command <*>)
+95,halt (command 1887),E56,halt (command <*>)
+96,wait (command 1886),E58,wait (command <*>)
+97,wait (command 1886),E58,wait (command <*>)
+98,wait (command 1886),E58,wait (command <*>)
+99,wait (command 1886),E58,wait (command <*>)
+100,boot (command 1886),E57,boot (command <*>)

@@ -1,0 +1,101 @@
+LineId,Content,EventId,EventTemplate
+1,LDAP: Built with OpenLDAP LDAP SDK,E20,LDAP: Built with OpenLDAP LDAP SDK
+2,LDAP: SSL support unavailable,E23,LDAP: SSL support unavailable
+3,suEXEC mechanism enabled (wrapper: /usr/sbin/suexec),E18,suEXEC mechanism enabled (wrapper: <*>)
+4,Digest: generating secret for digest authentication ...,E4,Digest: generating secret for digest authentication ...
+5,Digest: done,E29,Digest: done
+6,LDAP: Built with OpenLDAP LDAP SDK,E20,LDAP: Built with OpenLDAP LDAP SDK
+7,LDAP: SSL support unavailable,E23,LDAP: SSL support unavailable
+8,"env.createBean2(): Factory error creating channel.jni:jni ( channel.jni, jni)",E10,"env.createBean2(): Factory error creating <*> (<*>, <*>)"
+9,config.update(): Can't create channel.jni:jni,E21,config.update(): Can't create <*>
+10,"env.createBean2(): Factory error creating vm: ( vm, )",E10,"env.createBean2(): Factory error creating <*> (<*>, <*>)"
+11,config.update(): Can't create vm:,E21,config.update(): Can't create <*>
+12,"env.createBean2(): Factory error creating worker.jni:onStartup ( worker.jni, onStartup)",E10,"env.createBean2(): Factory error creating <*> (<*>, <*>)"
+13,config.update(): Can't create worker.jni:onStartup,E21,config.update(): Can't create <*>
+14,"env.createBean2(): Factory error creating worker.jni:onShutdown ( worker.jni, onShutdown)",E10,"env.createBean2(): Factory error creating <*> (<*>, <*>)"
+15,config.update(): Can't create worker.jni:onShutdown,E21,config.update(): Can't create <*>
+16,mod_python: Creating 32 session mutexes based on 150 max processes and 0 max threads.,E2,mod_python: Creating <*> session mutexes based on <*> max processes and <*> max threads.
+17,mod_security/1.9dev2 configured,E25,mod_security/<*> configured
+18,Apache/2.0.49 (Fedora) configured -- resuming normal operations,E8,Apache/<*> configured -- resuming normal operations
+19,jk2_init() Found child 2330 in scoreboard slot 0,E15,jk2_init() Found child <*> in scoreboard slot <*>
+20,jk2_init() Found child 2337 in scoreboard slot 7,E15,jk2_init() Found child <*> in scoreboard slot <*>
+21,jk2_init() Found child 2332 in scoreboard slot 2,E15,jk2_init() Found child <*> in scoreboard slot <*>
+22,jk2_init() Found child 2331 in scoreboard slot 1,E15,jk2_init() Found child <*> in scoreboard slot <*>
+23,jk2_init() Found child 2333 in scoreboard slot 3,E15,jk2_init() Found child <*> in scoreboard slot <*>
+24,jk2_init() Found child 2335 in scoreboard slot 5,E15,jk2_init() Found child <*> in scoreboard slot <*>
+25,jk2_init() Found child 2334 in scoreboard slot 4,E15,jk2_init() Found child <*> in scoreboard slot <*>
+26,jk2_init() Found child 2336 in scoreboard slot 6,E15,jk2_init() Found child <*> in scoreboard slot <*>
+27,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+28,mod_jk child init 1 0,E28,mod_jk child init <*> <*>
+29,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+30,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+31,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+32,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+33,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+34,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+35,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+36,[client 204.100.200.22] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+37,[client 207.203.80.15] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+38,[client 216.68.171.39] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+39,[client 24.158.204.7] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+40,[client 216.85.154.124] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+41,[client 219.136.165.149] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+42,[client 218.114.142.11] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+43,[client 211.74.182.199] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+44,[client 218.61.75.217] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+45,[client 12.32.56.253] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+46,[client 24.159.188.244] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+47,[client 222.76.16.61] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+48,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+49,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+50,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+51,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+52,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+53,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+54,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+55,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+56,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+57,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+58,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+59,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+60,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+61,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+62,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+63,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+64,jk2_init() Found child 4056 in scoreboard slot 8,E15,jk2_init() Found child <*> in scoreboard slot <*>
+65,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+66,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+67,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+68,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+69,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+70,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+71,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+72,[client 81.199.21.119] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+73,jk2_init() Can't find child 4057 in scoreboard,E14,jk2_init() Can't find child <*> in scoreboard
+74,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+75,mod_jk child init 1 -2,E28,mod_jk child init <*> <*>
+76,jk2_init() Can't find child 4058 in scoreboard,E14,jk2_init() Can't find child <*> in scoreboard
+77,workerEnv.init() ok /etc/httpd/conf/workers2.properties,E27,workerEnv.init() ok <*>
+78,mod_jk child init 1 -2,E28,mod_jk child init <*> <*>
+79,[client 219.150.171.68] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+80,[client 60.180.218.105] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+81,[client 12.223.73.171] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+82,[client 143.127.131.4] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+83,[client 65.106.172.142] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+84,[client 222.166.160.169] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+85,[client 221.211.123.40] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+86,[client 218.16.110.143] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+87,[client 61.187.179.247] Directory index forbidden by rule: /var/www/html/,E11,[client <*>] Directory index forbidden by rule: <*>
+88,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+89,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+90,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+91,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+92,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+93,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+94,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+95,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+96,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+97,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+98,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+99,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>
+100,[client 194.116.250.2] File does not exist: /var/www/html/sumthin,E24,[client <*>] File does not exist: <*>

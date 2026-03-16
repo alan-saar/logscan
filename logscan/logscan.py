@@ -100,7 +100,7 @@ class LogScan:
     sys.stdout.write(f'\r[{bar_str}] {percent}%')
     sys.stdout.flush()
 
-  def __init__(self, logdata: list, header: bool, header_regex = None, regex_list = None):
+  def __init__(self, logdata: list, header: bool, header_regex = None, regex_list = None, test_n = None):
     """
     Initializes the LogScan instance.
 
@@ -109,9 +109,12 @@ class LogScan:
         header (bool): Whether to strip headers using regex.
         header_regex (str, optional): Regex pattern for header removal.
         regex_list (list, optional): List of generic regex strings to mask variables before clustering.
+        test_n (int, optional): Number of rows to print per execution pipeline step.
     """
     # print('- Logscan v1.0')
     self._update_progress(0)
+    self.test_n = test_n
+    self.test_output = ""
     
     if regex_list:
         processed_data = []
@@ -127,6 +130,11 @@ class LogScan:
       self.data = pd.DataFrame(loglist,columns=['Log'])
     else:
       self.data = pd.DataFrame(logdata,columns=['Log'])
+
+    if self.test_n is not None:
+        self.test_output += "Input:\n"
+        for log in logdata[:self.test_n]:
+            self.test_output += str(log) + "\n"
 
   def clean_data(self):
     """
@@ -148,6 +156,11 @@ class LogScan:
         clean_log = ' '.join(clean_text)
         clear_content.append(clean_log)
     self.data['CleanLog'] = clear_content
+    
+    if self.test_n is not None:
+        self.test_output += "\nTratamento dos dados:\n"
+        for log in self.data['CleanLog'].head(self.test_n):
+            self.test_output += str(log) + "\n"
 
   def tfidf_transformer(self):
     """
@@ -161,6 +174,14 @@ class LogScan:
     unique_clean_logs = self.data['CleanLog'].drop_duplicates().reset_index(drop=True)
     vectorizer = TfidfVectorizer()
     vectors = vectorizer.fit_transform(unique_clean_logs)
+    
+    if self.test_n is not None:
+        self.test_output += "\nTF-IDF:\n"
+        test_tfidf = vectorizer.transform(self.data['CleanLog'].head(self.test_n))
+        for i in range(min(self.test_n, test_tfidf.shape[0])):
+            row = test_tfidf.getrow(i)
+            self.test_output += f"Log {i} TF-IDF: {row}\n"
+            
     return vectors, unique_clean_logs
 
   def dbscanModel(self, vectors, unique_clean_logs):
@@ -181,6 +202,11 @@ class LogScan:
     # Map clusters back to all rows based on their CleanLog
     cluster_map = dict(zip(unique_clean_logs, clusterModel.labels_))
     self.data['Cluster'] = self.data['CleanLog'].map(cluster_map)
+    
+    if self.test_n is not None:
+        self.test_output += "\nDBSCAN:\n"
+        for log, cl in zip(self.data['CleanLog'].head(self.test_n), self.data['Cluster'].head(self.test_n)):
+            self.test_output += f"Cluster: {cl} | CleanLog: {log}\n"
 
   def word_tagger(self):
     """
@@ -214,6 +240,16 @@ class LogScan:
       new_wordfrequency = [(w[0], w[1], count) for w, count in cluster_token_counts.items()]
       wordlabel = word_classifier(new_wordfrequency)
       tagger.append((cluster, wordlabel))
+      
+    if hasattr(self, 'test_n') and self.test_n is not None:
+        self.test_output += "\nLabels / Tagger:\n"
+        first_n_clusters = self.data['Cluster'].head(self.test_n).values
+        tagger_dict = dict(tagger)
+        for i, cl in enumerate(first_n_clusters):
+            labels = tagger_dict.get(cl, [])
+            labels_str = ", ".join([f"('{w[0]}', freq:{w[2]}, {w[3]})" for w in labels])
+            self.test_output += f"Log {i} (Cluster {cl}) Tagger: {labels_str}\n"
+            
     return tagger
 
   def create_templates(self, tagger):
@@ -266,14 +302,24 @@ class LogScan:
     Returns:
         tuple: (tagger, result_dataframe)
     """
-    self.clean_data()
-    vectors, unique_clean_logs = self.tfidf_transformer()
-    self.dbscanModel(vectors, unique_clean_logs)
-    tagger = self.word_tagger()
-    self.create_templates(tagger)
-    self._update_progress(100)
-    print()
-    return tagger, self.data
+    try:
+        self.clean_data()
+        vectors, unique_clean_logs = self.tfidf_transformer()
+        self.dbscanModel(vectors, unique_clean_logs)
+        tagger = self.word_tagger()
+        self.create_templates(tagger)
+        self._update_progress(100)
+        print()
+        if hasattr(self, 'test_n') and self.test_n is not None:
+            print("\n" + self.test_output.strip())
+            
+        return tagger, self.data
+    except Exception as e:
+        print()
+        if hasattr(self, 'test_n') and self.test_n is not None and hasattr(self, 'test_output'):
+            print("\n[ERRO NA PIPELINE] Intermediate Logs:")
+            print(self.test_output.strip())
+        raise e
 
 
 # Main logic handled below
@@ -310,7 +356,7 @@ def parsing_accuracy(data):
 
 import argparse
 
-def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", original_pa=False):
+def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", eval_all=False, original_pa=False, test_n=None):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         
@@ -327,12 +373,20 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
         try:
             test_dataset = pd.read_csv(os.path.join(indir, log_file + "_structured.csv"))
             regex_list = setting.get("regex", [])
-            log_scan_dataset = LogScan(list(test_dataset['Content']), header=False, regex_list=regex_list)
+            log_scan_dataset = LogScan(list(test_dataset['Content']), header=False, regex_list=regex_list, test_n=test_n)
             tagger, result_dataset = log_scan_dataset.pipeline()
             result_dataset['EventId'] = test_dataset['EventId']
             if 'EventTemplate' in test_dataset.columns:
                 result_dataset['EventTemplate'] = test_dataset['EventTemplate']
             result_dataset.to_csv(os.path.join(output_dir, log_file + "_structured.csv"))
+            
+            if test_n is not None:
+                print("\nTemplate final (com ground truth):")
+                for i in range(min(test_n, len(result_dataset))):
+                    row = result_dataset.iloc[i]
+                    print(f"Log: {row['Log']}")
+                    print(f"Template Final: {row['Template']}")
+                    print(f"Ground Truth:   {row.get('EventTemplate', '')}\n")
 
             if original_pa:
                 accuracy = original_parsing_accuracy(result_dataset)
@@ -348,8 +402,11 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     print(df_result)
     df_result.to_csv(result_file, float_format="%.6f")
 
-def benchmark(original_pa=False, selected_datasets=None):
-    input_dir = "logs/loghub_2k/"
+def benchmark(original_pa=False, test_n=None, selected_datasets=None):
+    if test_n is not None:
+        input_dir = "test_dataset/v1/"
+    else:
+        input_dir = "logs/loghub_2k/"
     output_dir = "Logscan_result/"
     
     benchmark_settings = {
@@ -488,10 +545,13 @@ def benchmark(original_pa=False, selected_datasets=None):
             valid_selected.append(lower_keys[sd.lower()])
         benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
         
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="benchmark/benchmark_loghub2k.csv", original_pa=original_pa)
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="benchmark/benchmark_loghub2k.csv", original_pa=original_pa, test_n=test_n)
 
-def benchmark_loghub2(original_pa=False, selected_datasets=None):
-    input_dir = "full_dataset/"
+def benchmark_loghub2(original_pa=False, test_n=None, selected_datasets=None):
+    if test_n is not None:
+        input_dir = "test_dataset/v2/"
+    else:
+        input_dir = "full_dataset/"
     output_dir = "Logscan_loghub2_results/"
 
     # datasets por ordem de tamanho
@@ -613,7 +673,7 @@ def benchmark_loghub2(original_pa=False, selected_datasets=None):
             valid_selected.append(lower_keys[sd.lower()])
         benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
         
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="benchmark/benchmark_loghub2.csv", original_pa=original_pa)
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="benchmark/benchmark_loghub2_benchmark_result.csv", eval_all=True, original_pa=original_pa, test_n=test_n)
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def error(self, message):
@@ -634,12 +694,13 @@ def main():
     
     parser.add_argument("--help", action="help", default=argparse.SUPPRESS, help="Mostra esta mensagem de ajuda e sai.")
     parser.add_argument("--datasets", type=str, help="Filtra a execução para datasets específicos (ex: --datasets=Linux,Apache).")
-    parser.add_argument("--original-pa", action="store_true", help="Calcula o Grouping PA (Original) ao invés do Parsing Accuracy exato.")
     
     version_group = parser.add_mutually_exclusive_group(required=True)
-    version_group.add_argument("--v1", action="store_true", help="Executa o benchmark com o dataset Loghub 2k.")
-    version_group.add_argument("--v2", action="store_true", help="Executa o benchmark com o dataset Loghub 2.0 (full dataset).")
-    version_group.add_argument("--test", action="store_true", help="Executa um teste rápido nos logs do Android_2k (Loghub 2k).")
+    version_group.add_argument("--v1", action="store_true", help="Run benchmark on Loghub 2k datasets")
+    version_group.add_argument("--v2", action="store_true", help="Run benchmark on Loghub 2.0 (full) datasets")
+    
+    parser.add_argument("--test", nargs='?', const=1, type=int, help="Run on test_dataset with N lines of intermediate steps printed (default 1)")
+    parser.add_argument("--original-pa", action="store_true", help="Compute Grouping PA instead of exact matching Parsing Accuracy")
     
     args = parser.parse_args()
     
@@ -648,12 +709,12 @@ def main():
         selected_datasets = [d.strip() for d in args.datasets.split(',')]
 
     if args.v2:
-        print("Executando Loghub 2.0 Benchmark...")
-        benchmark_loghub2(original_pa=args.original_pa, selected_datasets=selected_datasets)
+        print("Running Loghub 2.0 Benchmark...")
+        benchmark_loghub2(original_pa=args.original_pa, test_n=args.test, selected_datasets=selected_datasets)
     elif args.v1:
-        print("Executando Loghub 2k Benchmark...")
-        benchmark(original_pa=args.original_pa, selected_datasets=selected_datasets)
-    elif args.test:
+        print("Running Loghub 2k Benchmark...")
+        benchmark(original_pa=args.original_pa, test_n=args.test, selected_datasets=selected_datasets)
+    elif args.test: # This block is now redundant due to the new --test argument handling
         print("Executando Teste Rápido no Android_2k...")
         android_dataset = pd.read_csv("logs/loghub_2k/Android/Android_2k.log_structured.csv")
         log_scan_android = LogScan(list(android_dataset['Content']), header=False)
@@ -669,5 +730,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

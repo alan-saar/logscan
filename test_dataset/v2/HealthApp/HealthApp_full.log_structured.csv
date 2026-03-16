@@ -1,0 +1,101 @@
+LineId,Content,EventId,EventTemplate
+1,onStandStepChanged 3579,E131,onStandStepChanged <*>
+2,onReceive action: android.intent.action.SCREEN_ON,E137,onReceive action: <*>
+3,processHandleBroadcastAction action:android.intent.action.SCREEN_ON,E50,processHandleBroadcastAction action:<*>
+4,flush sensor data,E139,flush sensor data
+5,getTodayTotalDetailSteps = 1514038440000##6993##548365##8661##12266##27164404,E90,getTodayTotalDetailSteps = <*>
+6,setTodayTotalDetailSteps=1514038440000##7007##548365##8661##12361##27173954,E93,setTodayTotalDetailSteps=<*>
+7,onStandStepChanged 3579,E131,onStandStepChanged <*>
+8,calculateCaloriesWithCache totalCalories=126775,E36,calculateCaloriesWithCache totalCalories=<*>
+9,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+10,REPORT : 7007 5002 150089 240,E156,REPORT : <*>
+11,onStandStepChanged 3579,E131,onStandStepChanged <*>
+12,onStandStepChanged 3580,E131,onStandStepChanged <*>
+13,getTodayTotalDetailSteps = 1514038440000##7007##548365##8661##12361##27173954,E90,getTodayTotalDetailSteps = <*>
+14,setTodayTotalDetailSteps=1514038440000##7008##548365##8661##12456##27174269,E93,setTodayTotalDetailSteps=<*>
+15,calculateCaloriesWithCache totalCalories=126797,E36,calculateCaloriesWithCache totalCalories=<*>
+16,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+17,REPORT : 7008 5003 150111 240,E156,REPORT : <*>
+18,onStandStepChanged 3581,E131,onStandStepChanged <*>
+19,getTodayTotalDetailSteps = 1514038440000##7008##548365##8661##12456##27174269,E90,getTodayTotalDetailSteps = <*>
+20,setTodayTotalDetailSteps=1514038440000##7009##548365##8661##12551##27174951,E93,setTodayTotalDetailSteps=<*>
+21,calculateCaloriesWithCache totalCalories=126818,E36,calculateCaloriesWithCache totalCalories=<*>
+22,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+23,REPORT : 7009 5004 150132 240,E156,REPORT : <*>
+24,onStandStepChanged 3583,E131,onStandStepChanged <*>
+25,getTodayTotalDetailSteps = 1514038440000##7009##548365##8661##12551##27174951,E90,getTodayTotalDetailSteps = <*>
+26,setTodayTotalDetailSteps=1514038440000##7011##548365##8661##12646##27175461,E93,setTodayTotalDetailSteps=<*>
+27,calculateCaloriesWithCache totalCalories=126861,E36,calculateCaloriesWithCache totalCalories=<*>
+28,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+29,REPORT : 7011 5005 150175 240,E156,REPORT : <*>
+30,onStandStepChanged 3584,E131,onStandStepChanged <*>
+31,getTodayTotalDetailSteps = 1514038440000##7011##548365##8661##12646##27175461,E90,getTodayTotalDetailSteps = <*>
+32,setTodayTotalDetailSteps=1514038440000##7012##548365##8661##12741##27176464,E93,setTodayTotalDetailSteps=<*>
+33,calculateCaloriesWithCache totalCalories=126882,E36,calculateCaloriesWithCache totalCalories=<*>
+34,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+35,REPORT : 7012 5006 150197 240,E156,REPORT : <*>
+36,onStandStepChanged 3585,E131,onStandStepChanged <*>
+37,getTodayTotalDetailSteps = 1514038440000##7012##548365##8661##12741##27176464,E90,getTodayTotalDetailSteps = <*>
+38,setTodayTotalDetailSteps=1514038440000##7013##548365##8661##12836##27176966,E93,setTodayTotalDetailSteps=<*>
+39,calculateCaloriesWithCache totalCalories=126904,E36,calculateCaloriesWithCache totalCalories=<*>
+40,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+41,REPORT : 7013 5007 150218 240,E156,REPORT : <*>
+42,onStandStepChanged 3586,E131,onStandStepChanged <*>
+43,getTodayTotalDetailSteps = 1514038440000##7013##548365##8661##12836##27176966,E90,getTodayTotalDetailSteps = <*>
+44,setTodayTotalDetailSteps=1514038440000##7014##548365##8661##12931##27177463,E93,setTodayTotalDetailSteps=<*>
+45,calculateCaloriesWithCache totalCalories=126925,E36,calculateCaloriesWithCache totalCalories=<*>
+46,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+47,REPORT : 7014 5007 150239 240,E156,REPORT : <*>
+48,onStandStepChanged 3587,E131,onStandStepChanged <*>
+49,getTodayTotalDetailSteps = 1514038440000##7014##548365##8661##12931##27177463,E90,getTodayTotalDetailSteps = <*>
+50,setTodayTotalDetailSteps=1514038440000##7015##548365##8661##13026##27177962,E93,setTodayTotalDetailSteps=<*>
+51,calculateCaloriesWithCache totalCalories=126947,E36,calculateCaloriesWithCache totalCalories=<*>
+52,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+53,REPORT : 7015 5008 150261 240,E156,REPORT : <*>
+54,onStandStepChanged 3588,E131,onStandStepChanged <*>
+55,onReceive action: android.intent.action.SCREEN_OFF,E137,onReceive action: <*>
+56,onStandStepChanged 3589,E131,onStandStepChanged <*>
+57,getTodayTotalDetailSteps = 1514038440000##7015##548365##8661##13026##27177962,E90,getTodayTotalDetailSteps = <*>
+58,setTodayTotalDetailSteps=1514038440000##7017##548365##8661##13121##27179330,E93,setTodayTotalDetailSteps=<*>
+59,calculateCaloriesWithCache totalCalories=126989,E36,calculateCaloriesWithCache totalCalories=<*>
+60,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+61,isScreenOn true,E151,isScreenOn <*>
+62,"screen status unknown,think screen on",E67,"screen status unknown,think screen <*>"
+63,REPORT : 7017 5010 150304 240,E156,REPORT : <*>
+64,onReceive action: android.intent.action.SCREEN_ON,E137,onReceive action: <*>
+65,processHandleBroadcastAction action:android.intent.action.SCREEN_ON,E50,processHandleBroadcastAction action:<*>
+66,flush sensor data,E139,flush sensor data
+67,getTodayTotalDetailSteps = 1514038440000##7017##548365##8661##13121##27179330,E90,getTodayTotalDetailSteps = <*>
+68,setTodayTotalDetailSteps=1514038440000##7017##548365##8661##13216##27179417,E93,setTodayTotalDetailSteps=<*>
+69,onStandStepChanged 3589,E131,onStandStepChanged <*>
+70,calculateCaloriesWithCache totalCalories=126989,E36,calculateCaloriesWithCache totalCalories=<*>
+71,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+72,REPORT : 7017 5010 150304 240,E156,REPORT : <*>
+73,onStandStepChanged 3589,E131,onStandStepChanged <*>
+74,onStandStepChanged 3590,E131,onStandStepChanged <*>
+75,getTodayTotalDetailSteps = 1514038440000##7017##548365##8661##13216##27179417,E90,getTodayTotalDetailSteps = <*>
+76,setTodayTotalDetailSteps=1514038440000##7018##548365##8661##13311##27179732,E93,setTodayTotalDetailSteps=<*>
+77,calculateCaloriesWithCache totalCalories=127011,E36,calculateCaloriesWithCache totalCalories=<*>
+78,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+79,REPORT : 7018 5010 150325 240,E156,REPORT : <*>
+80,onStandStepChanged 3591,E131,onStandStepChanged <*>
+81,getTodayTotalDetailSteps = 1514038440000##7018##548365##8661##13311##27179732,E90,getTodayTotalDetailSteps = <*>
+82,setTodayTotalDetailSteps=1514038440000##7019##548365##8661##13406##27180468,E93,setTodayTotalDetailSteps=<*>
+83,calculateCaloriesWithCache totalCalories=127032,E36,calculateCaloriesWithCache totalCalories=<*>
+84,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+85,REPORT : 7019 5011 150346 240,E156,REPORT : <*>
+86,onStandStepChanged 3592,E131,onStandStepChanged <*>
+87,getTodayTotalDetailSteps = 1514038440000##7019##548365##8661##13406##27180468,E90,getTodayTotalDetailSteps = <*>
+88,setTodayTotalDetailSteps=1514038440000##7020##548365##8661##13501##27180976,E93,setTodayTotalDetailSteps=<*>
+89,calculateCaloriesWithCache totalCalories=127054,E36,calculateCaloriesWithCache totalCalories=<*>
+90,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+91,REPORT : 7020 5012 150368 240,E156,REPORT : <*>
+92,onStandStepChanged 3593,E131,onStandStepChanged <*>
+93,getTodayTotalDetailSteps = 1514038440000##7020##548365##8661##13501##27180976,E90,getTodayTotalDetailSteps = <*>
+94,setTodayTotalDetailSteps=1514038440000##7021##548365##8661##13596##27181971,E93,setTodayTotalDetailSteps=<*>
+95,calculateCaloriesWithCache totalCalories=127075,E36,calculateCaloriesWithCache totalCalories=<*>
+96,calculateAltitudeWithCache totalAltitude=240,E35,calculateAltitudeWithCache totalAltitude=<*>
+97,REPORT : 7021 5012 150389 240,E156,REPORT : <*>
+98,onStandStepChanged 3594,E131,onStandStepChanged <*>
+99,getTodayTotalDetailSteps = 1514038440000##7021##548365##8661##13596##27181971,E90,getTodayTotalDetailSteps = <*>
+100,setTodayTotalDetailSteps=1514038440000##7022##548365##8661##13691##27182468,E93,setTodayTotalDetailSteps=<*>
