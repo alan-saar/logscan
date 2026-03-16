@@ -313,6 +313,10 @@ import argparse
 def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", original_pa=False):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+        
+    result_dir = os.path.dirname(result_file)
+    if result_dir and not os.path.exists(result_dir):
+        os.makedirs(result_dir)
 
     benchmark_result = []
     for dataset, setting in settings.items():
@@ -344,7 +348,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     print(df_result)
     df_result.to_csv(result_file, float_format="%.6f")
 
-def benchmark(original_pa=False):
+def benchmark(original_pa=False, selected_datasets=None):
     input_dir = "logs/loghub_2k/"
     output_dir = "Logscan_result/"
     
@@ -473,9 +477,20 @@ def benchmark(original_pa=False):
         },
     }
     
-    run_benchmark(input_dir, output_dir, benchmark_settings, original_pa=original_pa)
+    if selected_datasets:
+        lower_keys = {k.lower(): k for k in benchmark_settings.keys()}
+        valid_selected = []
+        for sd in selected_datasets:
+            if sd.lower() not in lower_keys:
+                print(f"Erro: Dataset '{sd}' não encontrado no Loghub 2k.")
+                print(f"Datasets disponíveis: {', '.join(benchmark_settings.keys())}")
+                sys.exit(1)
+            valid_selected.append(lower_keys[sd.lower()])
+        benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
+        
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="benchmark/benchmark_loghub2k.csv", original_pa=original_pa)
 
-def benchmark_loghub2(original_pa=False):
+def benchmark_loghub2(original_pa=False, selected_datasets=None):
     input_dir = "full_dataset/"
     output_dir = "Logscan_loghub2_results/"
 
@@ -587,25 +602,59 @@ def benchmark_loghub2(original_pa=False):
         },
     }
     
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="Logscan_loghub2_benchmark_result.csv", original_pa=original_pa)
+    if selected_datasets:
+        lower_keys = {k.lower(): k for k in benchmark_settings.keys()}
+        valid_selected = []
+        for sd in selected_datasets:
+            if sd.lower() not in lower_keys:
+                print(f"Erro: Dataset '{sd}' não encontrado no Loghub 2.0.")
+                print(f"Datasets disponíveis: {', '.join(benchmark_settings.keys())}")
+                sys.exit(1)
+            valid_selected.append(lower_keys[sd.lower()])
+        benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
+        
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="benchmark/benchmark_loghub2.csv", original_pa=original_pa)
 
+class CustomArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write(f'Erro: {message}\n\n')
+        self.print_usage(sys.stderr)
+        sys.stderr.write("Use '--help' para ver os parâmetros disponíveis.\n")
+        sys.exit(2)
 
 def main():
     print('Logscan')
-    print(f"The package's version is: {__version__}")
+    print(f"A versão do pacote é: {__version__}")
     
-    parser = argparse.ArgumentParser(description="LogScan: Automated Log Parsing")
-    parser.add_argument("--v2", action="store_true", help="Run benchmark on Loghub 2.0 datasets")
-    parser.add_argument("--test", action="store_true", help="Run a quick test on Android_2k logs")
-    parser.add_argument("--original-pa", action="store_true", help="Compute Grouping PA instead of exact matching Parsing Accuracy")
+    parser = CustomArgumentParser(
+        description="LogScan: Ferramenta automatizada de parsing de logs.\nOs parâmetros --v1, --v2 ou --test são obrigatórios.",
+        add_help=False,
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    
+    parser.add_argument("--help", action="help", default=argparse.SUPPRESS, help="Mostra esta mensagem de ajuda e sai.")
+    parser.add_argument("--datasets", type=str, help="Filtra a execução para datasets específicos (ex: --datasets=Linux,Apache).")
+    parser.add_argument("--original-pa", action="store_true", help="Calcula o Grouping PA (Original) ao invés do Parsing Accuracy exato.")
+    
+    version_group = parser.add_mutually_exclusive_group(required=True)
+    version_group.add_argument("--v1", action="store_true", help="Executa o benchmark com o dataset Loghub 2k.")
+    version_group.add_argument("--v2", action="store_true", help="Executa o benchmark com o dataset Loghub 2.0 (full dataset).")
+    version_group.add_argument("--test", action="store_true", help="Executa um teste rápido nos logs do Android_2k (Loghub 2k).")
     
     args = parser.parse_args()
+    
+    selected_datasets = None
+    if args.datasets:
+        selected_datasets = [d.strip() for d in args.datasets.split(',')]
 
     if args.v2:
-        print("Running Loghub 2.0 Benchmark...")
-        benchmark_loghub2(original_pa=args.original_pa)
+        print("Executando Loghub 2.0 Benchmark...")
+        benchmark_loghub2(original_pa=args.original_pa, selected_datasets=selected_datasets)
+    elif args.v1:
+        print("Executando Loghub 2k Benchmark...")
+        benchmark(original_pa=args.original_pa, selected_datasets=selected_datasets)
     elif args.test:
-        print("Running Test on Android_2k...")
+        print("Executando Teste Rápido no Android_2k...")
         android_dataset = pd.read_csv("logs/loghub_2k/Android/Android_2k.log_structured.csv")
         log_scan_android = LogScan(list(android_dataset['Content']), header=False)
         tagger_android, result_dataset = log_scan_android.pipeline()
@@ -617,10 +666,6 @@ def main():
             accuracy = parsing_accuracy(result_dataset)
         print(f"Test Accuracy: {accuracy}")
         result_dataset.to_csv('resultados.csv')
-    else:
-        # Default behavior: run original benchmark
-        print("Running Standard Loghub 2k Benchmark...")
-        benchmark(original_pa=args.original_pa)
 
 if __name__ == "__main__":
     main()
