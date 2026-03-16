@@ -99,18 +99,12 @@ def remove_repeated(wordfrequency):
 
 # Funcoes de avaliacao
 
-def parsing_accuracy(data):
+def original_parsing_accuracy(data):
   """
-  Calculates the parsing accuracy (PA) of the clustering results.
+  Calculates Grouping parsing accuracy (Original PA) of the clustering results.
 
-  PA is defined as the ratio of correctly parsed logs to the total number of logs.
-  A cluster is correctly parsed if the dominant EventId matches the ground truth.
-
-  Args:
-      data (pd.DataFrame): DataFrame containing 'EventId' and 'Cluster' columns.
-
-  Returns:
-      float: The parsing accuracy score.
+  This is a Group Accuracy metric calculating the ratio of correctly grouped logs 
+  to the total number of logs based on EventId.
   """
   log_per_template =  data['EventId'].value_counts().to_dict()
   correct = 0
@@ -120,6 +114,37 @@ def parsing_accuracy(data):
     for eventid in np.unique(data_cluster['EventId']):
       if log_per_template[eventid] == log_per_template_cluster[eventid]:
         correct = correct + log_per_template_cluster[eventid]
+  return correct/len(data)
+
+def parsing_accuracy(data):
+  """
+  Calculates the exact sequence Parsing Accuracy (PA) of the clustering results.
+
+  PA is defined as the proportion of correctly parsed log messages to the total number 
+  of log messages. A log message is regarded as correctly parsed if, and only if, all tokens 
+  of templates and variables are accurately identified. This requires both EventTemplate and
+  Template columns to exist in data.
+
+  Args:
+      data (pd.DataFrame): DataFrame containing 'EventTemplate' and 'Template' columns.
+
+  Returns:
+      float: The exact match parsing accuracy score.
+  """
+  if 'EventTemplate' not in data.columns or 'Template' not in data.columns:
+    raise ValueError("Both 'EventTemplate' and 'Template' columns must be present in data for exact PA.")
+  
+  correct = 0
+  for idx, row in data.iterrows():
+    gen = str(row['Template']).strip()
+    ref = str(row['EventTemplate']).strip()
+    
+    gen = re.sub(r'\s+', ' ', gen)
+    ref = re.sub(r'\s+', ' ', ref)
+    
+    if gen == ref:
+      correct += 1
+      
   return correct/len(data)
 
 def cluster_accuracy(data):
@@ -173,7 +198,7 @@ def cluster_evaluation(data):
   """
   Computes a comprehensive evaluation of the clustering results.
 
-  Calculates Parsing Accuracy, Cluster Accuracy, and their combined metric,
+  Calculates Original Parsing Accuracy, Cluster Accuracy, and their combined metric,
   and returns the average of the three along with the individual scores.
 
   Args:
@@ -182,7 +207,7 @@ def cluster_evaluation(data):
   Returns:
       tuple: A tuple containing (average_score, PA, CA, PCA).
   """
-  resultado1 = parsing_accuracy(data)
+  resultado1 = original_parsing_accuracy(data)
   resultado2 = cluster_accuracy(data)
   resultado3 = parsing_cluster_accuracy(data)
   resultado = (resultado1 + resultado2 + resultado3)/3

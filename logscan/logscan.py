@@ -280,7 +280,7 @@ class LogScan:
 
 
 
-def parsing_accuracy(data):
+def original_parsing_accuracy(data):
     log_per_template =  data['EventId'].value_counts().to_dict()
     correct = 0
     for cluster in np.unique(data['Cluster']):
@@ -291,9 +291,26 @@ def parsing_accuracy(data):
                 correct = correct + log_per_template_cluster[eventid]
     return correct/len(data)
 
+def parsing_accuracy(data):
+    if 'EventTemplate' not in data.columns or 'Template' not in data.columns:
+        raise ValueError("Both 'EventTemplate' and 'Template' columns must be present in data for exact PA.")
+    
+    correct = 0
+    for idx, row in data.iterrows():
+        gen = str(row['Template']).strip()
+        ref = str(row['EventTemplate']).strip()
+        
+        gen = re.sub(r'\s+', ' ', gen)
+        ref = re.sub(r'\s+', ' ', ref)
+        
+        if gen == ref:
+            correct += 1
+            
+    return correct/len(data)
+
 import argparse
 
-def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv"):
+def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", original_pa=False):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -309,9 +326,14 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
             log_scan_dataset = LogScan(list(test_dataset['Content']), header=False, regex_list=regex_list)
             tagger, result_dataset = log_scan_dataset.pipeline()
             result_dataset['EventId'] = test_dataset['EventId']
+            if 'EventTemplate' in test_dataset.columns:
+                result_dataset['EventTemplate'] = test_dataset['EventTemplate']
             result_dataset.to_csv(os.path.join(output_dir, log_file + "_structured.csv"))
 
-            accuracy = parsing_accuracy(result_dataset)
+            if original_pa:
+                accuracy = original_parsing_accuracy(result_dataset)
+            else:
+                accuracy = parsing_accuracy(result_dataset)
             benchmark_result.append([dataset, accuracy])
         except Exception as e:
             print(f"Error processing {dataset}: {e}")
@@ -322,7 +344,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     print(df_result)
     df_result.to_csv(result_file, float_format="%.6f")
 
-def benchmark():
+def benchmark(original_pa=False):
     input_dir = "logs/loghub_2k/"
     output_dir = "Logscan_result/"
     
@@ -451,9 +473,9 @@ def benchmark():
         },
     }
     
-    run_benchmark(input_dir, output_dir, benchmark_settings)
+    run_benchmark(input_dir, output_dir, benchmark_settings, original_pa=original_pa)
 
-def benchmark_loghub2():
+def benchmark_loghub2(original_pa=False):
     input_dir = "full_dataset/"
     output_dir = "Logscan_loghub2_results/"
 
@@ -565,7 +587,7 @@ def benchmark_loghub2():
         },
     }
     
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="Logscan_loghub2_benchmark_result.csv")
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="Logscan_loghub2_benchmark_result.csv", original_pa=original_pa)
 
 
 def main():
@@ -575,25 +597,30 @@ def main():
     parser = argparse.ArgumentParser(description="LogScan: Automated Log Parsing")
     parser.add_argument("--v2", action="store_true", help="Run benchmark on Loghub 2.0 datasets")
     parser.add_argument("--test", action="store_true", help="Run a quick test on Android_2k logs")
+    parser.add_argument("--original-pa", action="store_true", help="Compute Grouping PA instead of exact matching Parsing Accuracy")
     
     args = parser.parse_args()
 
     if args.v2:
         print("Running Loghub 2.0 Benchmark...")
-        benchmark_loghub2()
+        benchmark_loghub2(original_pa=args.original_pa)
     elif args.test:
         print("Running Test on Android_2k...")
-        android_dataset = pd.read_csv("logs/Android_2k.log_structured.csv")
+        android_dataset = pd.read_csv("logs/loghub_2k/Android/Android_2k.log_structured.csv")
         log_scan_android = LogScan(list(android_dataset['Content']), header=False)
         tagger_android, result_dataset = log_scan_android.pipeline()
         result_dataset['EventId'] = android_dataset['EventId']
-        accuracy = parsing_accuracy(result_dataset)
+        result_dataset['EventTemplate'] = android_dataset['EventTemplate']
+        if args.original_pa:
+            accuracy = original_parsing_accuracy(result_dataset)
+        else:
+            accuracy = parsing_accuracy(result_dataset)
         print(f"Test Accuracy: {accuracy}")
         result_dataset.to_csv('resultados.csv')
     else:
         # Default behavior: run original benchmark
         print("Running Standard Loghub 2k Benchmark...")
-        benchmark()
+        benchmark(original_pa=args.original_pa)
 
 if __name__ == "__main__":
     main()
