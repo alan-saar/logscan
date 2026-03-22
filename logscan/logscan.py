@@ -92,12 +92,16 @@ class LogScan:
   Attributes:
       data (pd.DataFrame): DataFrame storing log data and processing results.
   """
-  def _update_progress(self, percent):
+  def _update_progress(self, percent, step_name=None):
+    if step_name is not None:
+        self.current_step = step_name
     bars = int(percent / 5)
     if bars > 20: bars = 20
     if percent > 100: percent = 100
     bar_str = '#' * bars + ' ' * (20 - bars)
-    sys.stdout.write(f'\r[{bar_str}] {percent}%')
+    step_str = f" - {self.current_step}" if hasattr(self, 'current_step') else ""
+    out = f'\r[{bar_str}] {percent}%{step_str}'
+    sys.stdout.write(out.ljust(80))
     sys.stdout.flush()
 
   def __init__(self, logdata: list, header: bool, header_regex = None, regex_list = None, test_n = None):
@@ -112,7 +116,7 @@ class LogScan:
         test_n (int, optional): Number of rows to print per execution pipeline step.
     """
     # print('- Logscan v1.0')
-    self._update_progress(0)
+    self._update_progress(0, "Inicializando")
     self.test_n = test_n
     self.test_output = ""
     
@@ -143,6 +147,7 @@ class LogScan:
     Populates the 'CleanLog' column in self.data.
     """
     # print('-- Data Cleaning')
+    self._update_progress(0, "Data Cleaning")
     clear_content = []
     total = len(self.data)
     for i, (_, row) in enumerate(self.data.iterrows()):
@@ -170,7 +175,7 @@ class LogScan:
         tuple: (vectors, unique_clean_logs)
     """
     # print('-- TF-IDF Transformer')
-    self._update_progress(20)
+    self._update_progress(20, "TF-IDF Transformer")
     unique_clean_logs = self.data['CleanLog'].drop_duplicates().reset_index(drop=True)
     vectorizer = TfidfVectorizer()
     vectors = vectorizer.fit_transform(unique_clean_logs)
@@ -195,7 +200,7 @@ class LogScan:
         unique_clean_logs (pd.Series): The unique logs.
     """
     # print('-- DBSCAN')
-    self._update_progress(30)
+    self._update_progress(30, "DBSCAN Clustering")
     clusterModel = DBSCAN(min_samples=2)
     clusterModel.fit(vectors)
     
@@ -216,7 +221,7 @@ class LogScan:
         list: A list of (cluster_id, labeled_words) tuples.
     """
     # print('-- Word Tagger')
-    self._update_progress(40)
+    self._update_progress(40, "Word Tagger")
     tagger = []
     clusters = np.unique(self.data['Cluster'])
     total_clusters = len(clusters)
@@ -262,7 +267,7 @@ class LogScan:
         tagger (list): Output from word_tagger().
     """
     # print('-- Template Extraction')
-    self._update_progress(70)
+    self._update_progress(70, "Template Extraction")
     templates = []
     variables = []
     
@@ -308,7 +313,7 @@ class LogScan:
         self.dbscanModel(vectors, unique_clean_logs)
         tagger = self.word_tagger()
         self.create_templates(tagger)
-        self._update_progress(100)
+        self._update_progress(100, "Concluído")
         print()
         if hasattr(self, 'test_n') and self.test_n is not None:
             print("\n" + self.test_output.strip())
@@ -366,7 +371,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
 
     benchmark_result = []
     for dataset, setting in settings.items():
-        print("\n=== Avaliando: %s ===" % dataset)
+        print(f"\n=== Avaliando: {dataset} ===", flush=True)
         indir = os.path.join(input_dir, os.path.dirname(setting["log_file"]))
         log_file = os.path.basename(setting["log_file"])
 
@@ -393,8 +398,11 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
             else:
                 accuracy = parsing_accuracy(result_dataset)
             benchmark_result.append([dataset, accuracy])
+            print(f"=== Resultado parcial para {dataset} ===", flush=True)
+            print(f"Accuracy: {accuracy:.6f}", flush=True)
+            print("=========================================\n", flush=True)
         except Exception as e:
-            print(f"Error processing {dataset}: {e}")
+            print(f"Error processing {dataset}: {e}", flush=True)
 
     print("\n=== Resultados ===")
     df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
