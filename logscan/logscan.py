@@ -432,6 +432,16 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     print("\n=== Resultados ===")
     df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
     df_result.set_index("Dataset", inplace=True)
+    
+    dataset_exibit_order = [
+        "Hadoop", "HDFS", "OpenStack", "Spark", "Zookeeper", "BGL", "HPC", 
+        "Thunderbird", "Linux", "Mac", "Apache", "OpenSSH", "HealthApp", "Proxifier"
+    ]
+    valid_order = [d for d in dataset_exibit_order if d in df_result.index]
+    valid_order += [d for d in df_result.index if d not in valid_order]
+    
+    df_result = df_result.reindex(valid_order)
+    
     print(df_result)
     print(f"\nTempo total de execução do comando: {total_time_str}", flush=True)
     df_result.to_csv(result_file, float_format="%.6f")
