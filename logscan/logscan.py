@@ -413,9 +413,10 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
 def benchmark(original_pa=False, test_n=None, selected_datasets=None):
     if test_n is not None:
         input_dir = "test_dataset/v1/"
+        output_dir = "results/loghub2k_test/"
     else:
         input_dir = "logs/loghub_2k/"
-    output_dir = "Logscan_result/"
+        output_dir = "results/loghub2k/"
     
     benchmark_settings = {
         "HDFS": {
@@ -553,14 +554,21 @@ def benchmark(original_pa=False, test_n=None, selected_datasets=None):
             valid_selected.append(lower_keys[sd.lower()])
         benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
         
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="benchmark/benchmark_loghub2k.csv", original_pa=original_pa, test_n=test_n)
+    file_name = "benchmark_loghub2k"
+    if original_pa:
+        file_name += "_original_pa"
+    if test_n is not None:
+        file_name += "_test"
+    file_name += ".csv"
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", original_pa=original_pa, test_n=test_n)
 
 def benchmark_loghub2(original_pa=False, test_n=None, selected_datasets=None):
     if test_n is not None:
         input_dir = "test_dataset/v2/"
+        output_dir = "results/loghub2_test/"
     else:
         input_dir = "full_dataset/"
-    output_dir = "Logscan_loghub2_results/"
+        output_dir = "results/loghub2/"
 
     # datasets por ordem de tamanho
     benchmark_settings = {
@@ -681,7 +689,13 @@ def benchmark_loghub2(original_pa=False, test_n=None, selected_datasets=None):
             valid_selected.append(lower_keys[sd.lower()])
         benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
         
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file="benchmark/benchmark_loghub2_benchmark_result.csv", eval_all=True, original_pa=original_pa, test_n=test_n)
+    file_name = "benchmark_loghub2"
+    if original_pa:
+        file_name += "_original_pa"
+    if test_n is not None:
+        file_name += "_test"
+    file_name += ".csv"
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", eval_all=True, original_pa=original_pa, test_n=test_n)
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def error(self, message):
