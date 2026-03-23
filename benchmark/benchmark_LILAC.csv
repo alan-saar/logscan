@@ -1,0 +1,15 @@
+Dataset,Accuracy
+Hadoop,0.832
+HDFS,0.999
+OpenStack,1.000
+Spark,0.973
+Zookeeper,0.687
+BGL,0.958
+HPC,0.705
+Thunderbird,0.559
+Linux,0.765
+Mac,0.638
+Apache,0.996
+OpenSSH,0.941
+HealthApp,0.729
+Proxifier,1.000
