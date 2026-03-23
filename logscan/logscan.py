@@ -360,8 +360,11 @@ def parsing_accuracy(data):
     return correct/len(data)
 
 import argparse
+import time
 
 def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", eval_all=False, original_pa=False, test_n=None):
+    total_start_time = time.time()
+    
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         
@@ -371,6 +374,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
 
     benchmark_result = []
     for dataset, setting in settings.items():
+        dataset_start_time = time.time()
         print(f"\n=== Avaliando: {dataset} ===", flush=True)
         indir = os.path.join(input_dir, os.path.dirname(setting["log_file"]))
         log_file = os.path.basename(setting["log_file"])
@@ -397,17 +401,39 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
                 accuracy = original_parsing_accuracy(result_dataset)
             else:
                 accuracy = parsing_accuracy(result_dataset)
+                
+            dataset_end_time = time.time()
+            elapsed = dataset_end_time - dataset_start_time
+            hours, rem = divmod(elapsed, 3600)
+            minutes, seconds = divmod(rem, 60)
+            time_str = f"{int(hours)}h {int(minutes)}m {seconds:.2f}s"
+            
             benchmark_result.append([dataset, accuracy])
             print(f"=== Resultado parcial para {dataset} ===", flush=True)
             print(f"Accuracy: {accuracy:.6f}", flush=True)
+            print(f"Tempo de execução deste dataset: {time_str}", flush=True)
             print("=========================================\n", flush=True)
         except Exception as e:
+            dataset_end_time = time.time()
+            elapsed = dataset_end_time - dataset_start_time
+            hours, rem = divmod(elapsed, 3600)
+            minutes, seconds = divmod(rem, 60)
+            time_str = f"{int(hours)}h {int(minutes)}m {seconds:.2f}s"
+            
             print(f"Error processing {dataset}: {e}", flush=True)
+            print(f"Tempo de execução (com erro): {time_str}", flush=True)
+
+    total_end_time = time.time()
+    total_elapsed = total_end_time - total_start_time
+    t_hours, t_rem = divmod(total_elapsed, 3600)
+    t_minutes, t_seconds = divmod(t_rem, 60)
+    total_time_str = f"{int(t_hours)}h {int(t_minutes)}m {t_seconds:.2f}s"
 
     print("\n=== Resultados ===")
     df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
     df_result.set_index("Dataset", inplace=True)
     print(df_result)
+    print(f"\nTempo total de execução do comando: {total_time_str}", flush=True)
     df_result.to_csv(result_file, float_format="%.6f")
 
 def benchmark(original_pa=False, test_n=None, selected_datasets=None):
@@ -554,7 +580,7 @@ def benchmark(original_pa=False, test_n=None, selected_datasets=None):
             valid_selected.append(lower_keys[sd.lower()])
         benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
         
-    file_name = "benchmark_loghub2k"
+    file_name = "benchmark_Logscan2k"
     if original_pa:
         file_name += "_original_pa"
     if test_n is not None:
@@ -689,7 +715,7 @@ def benchmark_loghub2(original_pa=False, test_n=None, selected_datasets=None):
             valid_selected.append(lower_keys[sd.lower()])
         benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
         
-    file_name = "benchmark_loghub2"
+    file_name = "benchmark_Logscan"
     if original_pa:
         file_name += "_original_pa"
     if test_n is not None:
