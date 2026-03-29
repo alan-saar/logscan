@@ -253,3 +253,39 @@ def template_accuracy(data):
     fta = 2 * (pta * rta) / (pta + rta)
       
   return fta, pta, rta
+
+def grouping_accuracy(data):
+  """
+  Calculates Grouping Accuracy (GA) and F1-score of Grouping Accuracy (FGA).
+  
+  A group is correctly identified if its parsed set of log indices
+  matches the ground truth set of log indices identically.
+  
+  Args:
+      data (pd.DataFrame): DataFrame containing 'EventId' and 'Cluster' columns.
+
+  Returns:
+      tuple: A tuple containing (GA, FGA, PGA, RGA).
+  """
+  if 'EventId' not in data.columns or 'Cluster' not in data.columns:
+    raise ValueError("Both 'EventId' and 'Cluster' columns must be present in data for GA and FGA.")
+
+  oracle_groups_map = data.groupby('EventId').groups
+  parsed_groups_map = data.groupby('Cluster').groups
+  
+  oracle_groups = set(frozenset(indices) for indices in oracle_groups_map.values())
+  parsed_groups = set(frozenset(indices) for indices in parsed_groups_map.values())
+  
+  correct_groups = parsed_groups.intersection(oracle_groups)
+  
+  ga = sum(len(g) for g in correct_groups) / len(data) if len(data) > 0 else 0
+  
+  pga = len(correct_groups) / len(parsed_groups) if len(parsed_groups) > 0 else 0
+  rga = len(correct_groups) / len(oracle_groups) if len(oracle_groups) > 0 else 0
+  
+  if pga + rga == 0:
+    fga = 0.0
+  else:
+    fga = 2 * (pga * rga) / (pga + rga)
+      
+  return ga, fga, pga, rga

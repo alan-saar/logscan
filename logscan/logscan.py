@@ -388,6 +388,30 @@ def template_accuracy(data):
         
     return fta, pta, rta
 
+def grouping_accuracy(data):
+    if 'EventId' not in data.columns or 'Cluster' not in data.columns:
+        raise ValueError("Both 'EventId' and 'Cluster' columns must be present in data for GA and FGA.")
+
+    oracle_groups_map = data.groupby('EventId').groups
+    parsed_groups_map = data.groupby('Cluster').groups
+    
+    oracle_groups = set(frozenset(indices) for indices in oracle_groups_map.values())
+    parsed_groups = set(frozenset(indices) for indices in parsed_groups_map.values())
+    
+    correct_groups = parsed_groups.intersection(oracle_groups)
+    
+    ga = sum(len(g) for g in correct_groups) / len(data) if len(data) > 0 else 0
+    
+    pga = len(correct_groups) / len(parsed_groups) if len(parsed_groups) > 0 else 0
+    rga = len(correct_groups) / len(oracle_groups) if len(oracle_groups) > 0 else 0
+    
+    if pga + rga == 0:
+        fga = 0.0
+    else:
+        fga = 2 * (pga * rga) / (pga + rga)
+        
+    return ga, fga, pga, rga
+
 import argparse
 import time
 
@@ -432,6 +456,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
             else:
                 accuracy = parsing_accuracy(result_dataset)
                 fta, pta, rta = template_accuracy(result_dataset)
+                ga, fga, pga, rga = grouping_accuracy(result_dataset)
                 
             dataset_end_time = time.time()
             elapsed = dataset_end_time - dataset_start_time
@@ -442,7 +467,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
             if original_pa:
                 benchmark_result.append([dataset, accuracy])
             else:
-                benchmark_result.append([dataset, accuracy, fta])
+                benchmark_result.append([dataset, accuracy, fta, ga, fga])
                 
             print(f"=== Resultado parcial para {dataset} ===", flush=True)
             print(f"| {'Metric':<6} | {'Score':<11} |", flush=True)
@@ -450,6 +475,8 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
             print(f"| {'PA':<6} | {accuracy:<11.6f} |", flush=True)
             if not original_pa:
                 print(f"| {'FTA':<6} | {fta:<11.6f} |", flush=True)
+                print(f"| {'GA':<6} | {ga:<11.6f} |", flush=True)
+                print(f"| {'FGA':<6} | {fga:<11.6f} |", flush=True)
             print(f"| {'Tempo':<6} | {time_str:<11} |", flush=True)
             print("=========================================\n", flush=True)
         except Exception as e:
@@ -472,7 +499,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     if original_pa:
         df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
     else:
-        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "FTA"])
+        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "FTA", "GA", "FGA"])
     df_result.set_index("Dataset", inplace=True)
     
     dataset_exibit_order = [
@@ -491,10 +518,10 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
         for _, row in res_df.iterrows():
             print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f}")
     else:
-        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'FTA':<10}")
-        print("-" * 41)
+        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'FTA':<10} | {'GA':<10} | {'FGA':<10}")
+        print("-" * 67)
         for _, row in res_df.iterrows():
-            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f} | {row['FTA']:<10.6f}")
+            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f} | {row['FTA']:<10.6f} | {row['GA']:<10.6f} | {row['FGA']:<10.6f}")
 
     print(f"\nTempo total de execução do comando: {total_time_str}", flush=True)
     df_result.to_csv(result_file, float_format="%.6f")
