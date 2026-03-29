@@ -359,6 +359,35 @@ def parsing_accuracy(data):
             
     return correct/len(data)
 
+def template_accuracy(data):
+    if 'EventTemplate' not in data.columns or 'Template' not in data.columns:
+        raise ValueError("Both 'EventTemplate' and 'Template' columns must be present in data for FTA.")
+        
+    parsed_templates = set()
+    oracle_templates = set()
+    
+    for idx, row in data.iterrows():
+        gen = str(row['Template']).strip()
+        ref = str(row['EventTemplate']).strip()
+        
+        gen = re.sub(r'\s+', ' ', gen)
+        ref = re.sub(r'\s+', ' ', ref)
+        
+        parsed_templates.add(gen)
+        oracle_templates.add(ref)
+        
+    correct_templates = parsed_templates.intersection(oracle_templates)
+    
+    pta = len(correct_templates) / len(parsed_templates) if len(parsed_templates) > 0 else 0
+    rta = len(correct_templates) / len(oracle_templates) if len(oracle_templates) > 0 else 0
+    
+    if pta + rta == 0:
+        fta = 0.0
+    else:
+        fta = 2 * (pta * rta) / (pta + rta)
+        
+    return fta, pta, rta
+
 import argparse
 import time
 
@@ -399,8 +428,10 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
 
             if original_pa:
                 accuracy = original_parsing_accuracy(result_dataset)
+                fta = 0.0
             else:
                 accuracy = parsing_accuracy(result_dataset)
+                fta, pta, rta = template_accuracy(result_dataset)
                 
             dataset_end_time = time.time()
             elapsed = dataset_end_time - dataset_start_time
@@ -408,10 +439,18 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
             minutes, seconds = divmod(rem, 60)
             time_str = f"{int(hours)}h {int(minutes)}m {seconds:.2f}s"
             
-            benchmark_result.append([dataset, accuracy])
+            if original_pa:
+                benchmark_result.append([dataset, accuracy])
+            else:
+                benchmark_result.append([dataset, accuracy, fta])
+                
             print(f"=== Resultado parcial para {dataset} ===", flush=True)
-            print(f"Accuracy: {accuracy:.6f}", flush=True)
-            print(f"Tempo de execução deste dataset: {time_str}", flush=True)
+            print(f"| {'Metric':<6} | {'Score':<11} |", flush=True)
+            print(f"|{'-'*8}|{'-'*13}|", flush=True)
+            print(f"| {'PA':<6} | {accuracy:<11.6f} |", flush=True)
+            if not original_pa:
+                print(f"| {'FTA':<6} | {fta:<11.6f} |", flush=True)
+            print(f"| {'Tempo':<6} | {time_str:<11} |", flush=True)
             print("=========================================\n", flush=True)
         except Exception as e:
             dataset_end_time = time.time()
@@ -430,7 +469,10 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     total_time_str = f"{int(t_hours)}h {int(t_minutes)}m {t_seconds:.2f}s"
 
     print("\n=== Resultados ===")
-    df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
+    if original_pa:
+        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
+    else:
+        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "FTA"])
     df_result.set_index("Dataset", inplace=True)
     
     dataset_exibit_order = [
@@ -442,7 +484,18 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     
     df_result = df_result.reindex(valid_order)
     
-    print(df_result)
+    res_df = df_result.reset_index()
+    if original_pa:
+        print(f"{'Dataset':<15} | {'Accuracy':<10}")
+        print("-" * 28)
+        for _, row in res_df.iterrows():
+            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f}")
+    else:
+        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'FTA':<10}")
+        print("-" * 41)
+        for _, row in res_df.iterrows():
+            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f} | {row['FTA']:<10.6f}")
+
     print(f"\nTempo total de execução do comando: {total_time_str}", flush=True)
     df_result.to_csv(result_file, float_format="%.6f")
 

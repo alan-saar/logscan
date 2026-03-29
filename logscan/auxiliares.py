@@ -212,3 +212,44 @@ def cluster_evaluation(data):
   resultado3 = parsing_cluster_accuracy(data)
   resultado = (resultado1 + resultado2 + resultado3)/3
   return resultado, resultado1, resultado2, resultado3
+
+def template_accuracy(data):
+  """
+  Calculates Template Accuracy metrics.
+
+  Template Accuracy strictly checks if a parsed template exactly matches 
+  a template existing in the ground truth EventTemplates.
+
+  Args:
+      data (pd.DataFrame): DataFrame containing 'EventTemplate' and 'Template' columns.
+
+  Returns:
+      tuple: A tuple containing (FTA, PTA, RTA).
+  """
+  if 'EventTemplate' not in data.columns or 'Template' not in data.columns:
+    raise ValueError("Both 'EventTemplate' and 'Template' columns must be present in data for FTA.")
+    
+  parsed_templates = set()
+  oracle_templates = set()
+  
+  for idx, row in data.iterrows():
+    gen = str(row['Template']).strip()
+    ref = str(row['EventTemplate']).strip()
+    
+    gen = re.sub(r'\s+', ' ', gen)
+    ref = re.sub(r'\s+', ' ', ref)
+    
+    parsed_templates.add(gen)
+    oracle_templates.add(ref)
+      
+  correct_templates = parsed_templates.intersection(oracle_templates)
+  
+  pta = len(correct_templates) / len(parsed_templates) if len(parsed_templates) > 0 else 0
+  rta = len(correct_templates) / len(oracle_templates) if len(oracle_templates) > 0 else 0
+  
+  if pta + rta == 0:
+    fta = 0.0
+  else:
+    fta = 2 * (pta * rta) / (pta + rta)
+      
+  return fta, pta, rta
