@@ -415,7 +415,7 @@ def grouping_accuracy(data):
 import argparse
 import time
 
-def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", eval_all=False, original_pa=False, test_n=None):
+def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", eval_all=False, original_pa=False, test_n=None, correct_pa=None, incorrect_pa=None):
     total_start_time = time.time()
     
     if not os.path.exists(output_dir):
@@ -442,13 +442,77 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
                 result_dataset['EventTemplate'] = test_dataset['EventTemplate']
             result_dataset.to_csv(os.path.join(output_dir, log_file + "_structured.csv"))
             
-            if test_n is not None:
+            if test_n is not None or correct_pa is not None or incorrect_pa is not None:
                 print("\nTemplate final (com ground truth):")
-                for i in range(min(test_n, len(result_dataset))):
-                    row = result_dataset.iloc[i]
+                
+                rows_to_print = []
+                log_per_template = {}
+                cluster_counts_per_event = {}
+                
+                if original_pa and 'EventId' in result_dataset.columns:
+                    log_per_template = result_dataset['EventId'].value_counts().to_dict()
+                    for cluster in np.unique(result_dataset['Cluster']):
+                        data_cluster = result_dataset.loc[result_dataset['Cluster'] == cluster]
+                        cluster_counts_per_event[cluster] = data_cluster['EventId'].value_counts().to_dict()
+                
+                if correct_pa is not None or incorrect_pa is not None:
+                    correct_collected = 0
+                    incorrect_collected = 0
+                    
+                    for i in range(len(result_dataset)):
+                        max_c = correct_pa if correct_pa is not None else 0
+                        max_i = incorrect_pa if incorrect_pa is not None else 0
+                        
+                        if correct_collected >= max_c and incorrect_collected >= max_i:
+                            break
+                        
+                        row = result_dataset.iloc[i]
+                        gen = str(row.get('Template', '')).strip()
+                        ref = str(row.get('EventTemplate', '')).strip()
+                        gen = re.sub(r'\s+', ' ', gen)
+                        ref = re.sub(r'\s+', ' ', ref)
+                        is_correct_strict = (gen == ref)
+                        
+                        is_correct_original = False
+                        if original_pa and 'EventId' in row:
+                            e_id = row['EventId']
+                            c_id = row['Cluster']
+                            if e_id in log_per_template and c_id in cluster_counts_per_event and e_id in cluster_counts_per_event[c_id]:
+                                is_correct_original = (log_per_template[e_id] == cluster_counts_per_event[c_id][e_id])
+                        
+                        if is_correct_strict and correct_pa is not None and correct_collected < correct_pa:
+                            rows_to_print.append((row, is_correct_strict, is_correct_original))
+                            correct_collected += 1
+                        elif not is_correct_strict and incorrect_pa is not None and incorrect_collected < incorrect_pa:
+                            rows_to_print.append((row, is_correct_strict, is_correct_original))
+                            incorrect_collected += 1
+                else:
+                    for i in range(min(test_n, len(result_dataset))):
+                        row = result_dataset.iloc[i]
+                        gen = str(row.get('Template', '')).strip()
+                        ref = str(row.get('EventTemplate', '')).strip()
+                        gen = re.sub(r'\s+', ' ', gen)
+                        ref = re.sub(r'\s+', ' ', ref)
+                        is_correct_strict = (gen == ref)
+                        
+                        is_correct_original = False
+                        if original_pa and 'EventId' in row:
+                            e_id = row['EventId']
+                            c_id = row['Cluster']
+                            if e_id in log_per_template and c_id in cluster_counts_per_event and e_id in cluster_counts_per_event[c_id]:
+                                is_correct_original = (log_per_template[e_id] == cluster_counts_per_event[c_id][e_id])
+                                
+                        rows_to_print.append((row, is_correct_strict, is_correct_original))
+                        
+                for row, is_correct_strict, is_correct_original in rows_to_print:
                     print(f"Log: {row['Log']}")
-                    print(f"Template Final: {row['Template']}")
-                    print(f"Ground Truth:   {row.get('EventTemplate', '')}\n")
+                    print(f"Template Final: {row.get('Template', '')}")
+                    print(f"Ground Truth:   {row.get('EventTemplate', '')}")
+                    if original_pa:
+                        orig_str = str(is_correct_original).lower()
+                        print(f"correct={str(is_correct_strict).lower()} (correct={orig_str} on original pa)\n")
+                    else:
+                        print(f"correct={str(is_correct_strict).lower()}\n")
 
             if original_pa:
                 accuracy = original_parsing_accuracy(result_dataset)
@@ -526,7 +590,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     print(f"\nTempo total de execução do comando: {total_time_str}", flush=True)
     df_result.to_csv(result_file, float_format="%.6f")
 
-def benchmark(original_pa=False, test_n=None, selected_datasets=None):
+def benchmark(original_pa=False, test_n=None, correct_pa=None, incorrect_pa=None, selected_datasets=None):
     if test_n is not None:
         input_dir = "test_dataset/v1/"
         output_dir = "results/loghub2k_test/"
@@ -676,9 +740,9 @@ def benchmark(original_pa=False, test_n=None, selected_datasets=None):
     if test_n is not None:
         file_name += "_test"
     file_name += ".csv"
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", original_pa=original_pa, test_n=test_n)
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", original_pa=original_pa, test_n=test_n, correct_pa=correct_pa, incorrect_pa=incorrect_pa)
 
-def benchmark_loghub2(original_pa=False, test_n=None, selected_datasets=None):
+def benchmark_loghub2(original_pa=False, test_n=None, correct_pa=None, incorrect_pa=None, selected_datasets=None):
     if test_n is not None:
         input_dir = "test_dataset/v2/"
         output_dir = "results/loghub2_test/"
@@ -811,7 +875,7 @@ def benchmark_loghub2(original_pa=False, test_n=None, selected_datasets=None):
     if test_n is not None:
         file_name += "_test"
     file_name += ".csv"
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", eval_all=True, original_pa=original_pa, test_n=test_n)
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", eval_all=True, original_pa=original_pa, test_n=test_n, correct_pa=correct_pa, incorrect_pa=incorrect_pa)
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def error(self, message):
@@ -839,6 +903,8 @@ def main():
     
     parser.add_argument("--test", nargs='?', const=1, type=int, help="Run on test_dataset with N lines of intermediate steps printed (default 1)")
     parser.add_argument("--original-pa", action="store_true", help="Compute Grouping PA instead of exact matching Parsing Accuracy")
+    parser.add_argument("--correct-pa", nargs='?', const=1, type=int, help="Mostrará um output das N primeiras linhas que tiveram o template gerado conforme o gabarito (padrão 1).")
+    parser.add_argument("--incorrect-pa", nargs='?', const=1, type=int, help="Mostrará um output das N primeiras linhas que não tiveram o template gerado conforme o gabarito (padrão 1).")
     
     args = parser.parse_args()
     
@@ -848,10 +914,10 @@ def main():
 
     if args.v2:
         print("Running Loghub 2.0 Benchmark...")
-        benchmark_loghub2(original_pa=args.original_pa, test_n=args.test, selected_datasets=selected_datasets)
+        benchmark_loghub2(original_pa=args.original_pa, test_n=args.test, correct_pa=args.correct_pa, incorrect_pa=args.incorrect_pa, selected_datasets=selected_datasets)
     elif args.v1:
         print("Running Loghub 2k Benchmark...")
-        benchmark(original_pa=args.original_pa, test_n=args.test, selected_datasets=selected_datasets)
+        benchmark(original_pa=args.original_pa, test_n=args.test, correct_pa=args.correct_pa, incorrect_pa=args.incorrect_pa, selected_datasets=selected_datasets)
     elif args.test: # This block is now redundant due to the new --test argument handling
         print("Executando Teste Rápido no Android_2k...")
         android_dataset = pd.read_csv("logs/loghub_2k/Android/Android_2k.log_structured.csv")
