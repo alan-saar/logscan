@@ -12,6 +12,32 @@ import os
 # Utils & Configuration
 # ==========================================
 
+# Variáveis globais para rastreamento de custo e chamadas
+llm_calls_count = 0
+
+def reset_llm_calls():
+    global llm_calls_count
+    llm_calls_count = 0
+
+def get_llm_calls():
+    global llm_calls_count
+    return llm_calls_count
+
+def call_openai_api(messages, model="gpt-3.5-turbo-0125", temperature=0.0):
+    global llm_calls_count
+    if not setup_openai():
+        raise Exception("OpenAI API key not configured properly.")
+        
+    llm_calls_count += 1
+    
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=messages,
+        temperature=temperature
+    )
+    
+    return response["choices"][0]["message"]["content"]
+
 def get_keys_from_file(file_path):
     if os.path.exists(file_path):
         with open(file_path, 'r') as file:

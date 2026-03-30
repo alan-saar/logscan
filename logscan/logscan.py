@@ -104,7 +104,7 @@ class LogScan:
     sys.stdout.write(out.ljust(80))
     sys.stdout.flush()
 
-  def __init__(self, logdata: list, header: bool, header_regex = None, regex_list = None, test_n = None):
+  def __init__(self, logdata: list, header: bool, header_regex = None, regex_list = None, test_n = None, llm_refine=False, debug_llm=None):
     """
     Initializes the LogScan instance.
 
@@ -114,11 +114,15 @@ class LogScan:
         header_regex (str, optional): Regex pattern for header removal.
         regex_list (list, optional): List of generic regex strings to mask variables before clustering.
         test_n (int, optional): Number of rows to print per execution pipeline step.
+        llm_refine (bool, optional): Se a abordagem de refinamento Pós-DBSCAN com LLM será ativada.
+        debug_llm (int, optional): Número de logs ou limite de chamadas de LLM a serem detalhados na tela para visualização.
     """
     # print('- Logscan v1.0')
     self._update_progress(0, "Inicializando")
     self.test_n = test_n
     self.test_output = ""
+    self.llm_refine = llm_refine
+    self.debug_llm = debug_llm
     
     if regex_list:
         processed_data = []
@@ -313,6 +317,11 @@ class LogScan:
         self.dbscanModel(vectors, unique_clean_logs)
         tagger = self.word_tagger()
         self.create_templates(tagger)
+        
+        if self.llm_refine:
+            from logscan.llm_refine import run_llm_refinement
+            run_llm_refinement(self, self.debug_llm)
+        
         self._update_progress(100, "Concluído")
         print()
         if hasattr(self, 'test_n') and self.test_n is not None:
@@ -414,9 +423,11 @@ def grouping_accuracy(data):
 
 import argparse
 import time
+from logscan.llm import get_llm_calls, reset_llm_calls
 
-def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", eval_all=False, original_pa=False, test_n=None, correct_pa=None, incorrect_pa=None, correct_ga=None, incorrect_ga=None):
+def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmark_result.csv", eval_all=False, original_pa=False, test_n=None, correct_pa=None, incorrect_pa=None, correct_ga=None, incorrect_ga=None, llm_refine=False, debug_llm=None):
     total_start_time = time.time()
+    reset_llm_calls()
     
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -435,7 +446,7 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
         try:
             test_dataset = pd.read_csv(os.path.join(indir, log_file + "_structured.csv"))
             regex_list = setting.get("regex", [])
-            log_scan_dataset = LogScan(list(test_dataset['Content']), header=False, regex_list=regex_list, test_n=test_n)
+            log_scan_dataset = LogScan(list(test_dataset['Content']), header=False, regex_list=regex_list, test_n=test_n, llm_refine=llm_refine, debug_llm=debug_llm)
             tagger, result_dataset = log_scan_dataset.pipeline()
             result_dataset['EventId'] = test_dataset['EventId']
             if 'EventTemplate' in test_dataset.columns:
@@ -573,10 +584,12 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
             minutes, seconds = divmod(rem, 60)
             time_str = f"{int(hours)}h {int(minutes)}m {seconds:.2f}s"
             
+            calls_made = get_llm_calls()
+            
             if original_pa:
-                benchmark_result.append([dataset, accuracy])
+                benchmark_result.append([dataset, accuracy, calls_made])
             else:
-                benchmark_result.append([dataset, accuracy, fta, ga, fga])
+                benchmark_result.append([dataset, accuracy, fta, ga, fga, calls_made])
                 
             print(f"=== Resultado parcial para {dataset} ===", flush=True)
             print(f"| {'Metric':<6} | {'Score':<11} |", flush=True)
@@ -587,6 +600,8 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
                 print(f"| {'GA':<6} | {ga:<11.6f} |", flush=True)
                 print(f"| {'FGA':<6} | {fga:<11.6f} |", flush=True)
             print(f"| {'Tempo':<6} | {time_str:<11} |", flush=True)
+            if llm_refine:
+                print(f"| {'LLM':<6} | {calls_made:<11} |", flush=True)
             print("=========================================\n", flush=True)
         except Exception as e:
             dataset_end_time = time.time()
@@ -606,9 +621,9 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
 
     print("\n=== Resultados ===")
     if original_pa:
-        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy"])
+        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "LLM Calls"])
     else:
-        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "FTA", "GA", "FGA"])
+        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "FTA", "GA", "FGA", "LLM Calls"])
     df_result.set_index("Dataset", inplace=True)
     
     dataset_exibit_order = [
@@ -622,15 +637,15 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     
     res_df = df_result.reset_index()
     if original_pa:
-        print(f"{'Dataset':<15} | {'Accuracy':<10}")
-        print("-" * 28)
+        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'LLM Calls':<10}")
+        print("-" * 41)
         for _, row in res_df.iterrows():
-            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f}")
+            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f} | {int(row.get('LLM Calls', 0)):<10}")
     else:
-        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'FTA':<10} | {'GA':<10} | {'FGA':<10}")
-        print("-" * 67)
+        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'FTA':<10} | {'GA':<10} | {'FGA':<10} | {'LLM Calls':<10}")
+        print("-" * 80)
         for _, row in res_df.iterrows():
-            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f} | {row['FTA']:<10.6f} | {row['GA']:<10.6f} | {row['FGA']:<10.6f}")
+            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f} | {row['FTA']:<10.6f} | {row['GA']:<10.6f} | {row['FGA']:<10.6f} | {int(row.get('LLM Calls', 0)):<10}")
 
     print(f"\nTempo total de execução do comando: {total_time_str}", flush=True)
     df_result.to_csv(result_file, float_format="%.6f")
@@ -787,7 +802,7 @@ def benchmark(original_pa=False, test_n=None, correct_pa=None, incorrect_pa=None
     file_name += ".csv"
     run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", original_pa=original_pa, test_n=test_n, correct_pa=correct_pa, incorrect_pa=incorrect_pa, correct_ga=correct_ga, incorrect_ga=incorrect_ga)
 
-def benchmark_loghub2(original_pa=False, test_n=None, correct_pa=None, incorrect_pa=None, correct_ga=None, incorrect_ga=None, selected_datasets=None):
+def benchmark_loghub2(original_pa=False, test_n=None, correct_pa=None, incorrect_pa=None, correct_ga=None, incorrect_ga=None, selected_datasets=None, llm_refine=False, debug_llm=None):
     if test_n is not None:
         input_dir = "test_dataset/v2/"
         output_dir = "results/loghub2_test/"
@@ -915,12 +930,14 @@ def benchmark_loghub2(original_pa=False, test_n=None, correct_pa=None, incorrect
         benchmark_settings = {k: benchmark_settings[k] for k in valid_selected}
         
     file_name = "benchmark_Logscan"
+    if llm_refine:
+        file_name += "LLM1"
     if original_pa:
         file_name += "_original_pa"
     if test_n is not None:
         file_name += "_test"
     file_name += ".csv"
-    run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", eval_all=True, original_pa=original_pa, test_n=test_n, correct_pa=correct_pa, incorrect_pa=incorrect_pa, correct_ga=correct_ga, incorrect_ga=incorrect_ga)
+    run_benchmark(input_dir, output_dir, benchmark_settings, result_file=f"benchmark/{file_name}", eval_all=True, original_pa=original_pa, test_n=test_n, correct_pa=correct_pa, incorrect_pa=incorrect_pa, correct_ga=correct_ga, incorrect_ga=incorrect_ga, llm_refine=llm_refine, debug_llm=debug_llm)
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def error(self, message):
@@ -953,6 +970,8 @@ def main():
     parser.add_argument("--incorrect-pa", nargs='?', const=1, type=int, help="Mostrará um output das N primeiras linhas que não tiveram o template gerado conforme o gabarito (padrão 1).")
     parser.add_argument("--correct-ga", nargs='?', const=1, type=int, help="Mostrará um output das N primeiras linhas que tiveram o template agrupado no grupo correto (padrão 1).")
     parser.add_argument("--incorrect-ga", nargs='?', const=1, type=int, help="Mostrará um output das N primeiras linhas que não tiveram o template agrupado no grupo correto (padrão 1).")
+    parser.add_argument("--llm-refine", "--llm1", action="store_true", help="Ativa a abordagem 1 com LLM via chamada Pós-Processamento e refinamento de templates (Exclusivo para --v2)")
+    parser.add_argument("--debug-llm", nargs='?', const=-1, type=int, help="Imprime cada request e output da LLM. Se N for informado, exibe N primeiras requisições.")
     
     args = parser.parse_args()
     
@@ -965,10 +984,13 @@ def main():
         print("Testando conexão com a API da OpenAI...")
         test_openai_key()
         sys.exit(0)
+        
+    if args.llm_refine and not args.v2:
+        parser.error("Os parâmetros --llm-refine e análogos devem ser usados exclusivamente com a flag --v2 do dataset Loghub 2.0")
 
     if args.v2:
         print("Running Loghub 2.0 Benchmark...")
-        benchmark_loghub2(original_pa=args.original_pa, test_n=args.test, correct_pa=args.correct_pa, incorrect_pa=args.incorrect_pa, correct_ga=args.correct_ga, incorrect_ga=args.incorrect_ga, selected_datasets=selected_datasets)
+        benchmark_loghub2(original_pa=args.original_pa, test_n=args.test, correct_pa=args.correct_pa, incorrect_pa=args.incorrect_pa, correct_ga=args.correct_ga, incorrect_ga=args.incorrect_ga, selected_datasets=selected_datasets, llm_refine=args.llm_refine, debug_llm=args.debug_llm)
     elif args.v1:
         print("Running Loghub 2k Benchmark...")
         benchmark(original_pa=args.original_pa, test_n=args.test, correct_pa=args.correct_pa, incorrect_pa=args.incorrect_pa, correct_ga=args.correct_ga, incorrect_ga=args.incorrect_ga, selected_datasets=selected_datasets)
