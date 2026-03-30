@@ -945,6 +945,7 @@ def main():
     version_group = parser.add_mutually_exclusive_group(required=True)
     version_group.add_argument("--v1", action="store_true", help="Run benchmark on Loghub 2k datasets")
     version_group.add_argument("--v2", action="store_true", help="Run benchmark on Loghub 2.0 (full) datasets")
+    version_group.add_argument("--ping-llm", action="store_true", help="Testa a conexão com a API da OpenAI (llm.py)")
     
     parser.add_argument("--test", nargs='?', const=1, type=int, help="Run on test_dataset with N lines of intermediate steps printed (default 1)")
     parser.add_argument("--original-pa", action="store_true", help="Compute Grouping PA instead of exact matching Parsing Accuracy")
@@ -958,6 +959,12 @@ def main():
     selected_datasets = None
     if args.datasets:
         selected_datasets = [d.strip() for d in args.datasets.split(',')]
+
+    if args.ping_llm:
+        from .llm import test_openai_key
+        print("Testando conexão com a API da OpenAI...")
+        test_openai_key()
+        sys.exit(0)
 
     if args.v2:
         print("Running Loghub 2.0 Benchmark...")
