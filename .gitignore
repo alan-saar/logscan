@@ -1,4 +1,5 @@
 __pycache__/
+openai_key.txt
 Logscan_benchmark_result.csv
 resultados.csv
 devrefs/
