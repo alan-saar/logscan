@@ -587,9 +587,9 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
             calls_made = get_llm_calls()
             
             if original_pa:
-                benchmark_result.append([dataset, accuracy, calls_made])
+                benchmark_result.append([dataset, accuracy, time_str, calls_made])
             else:
-                benchmark_result.append([dataset, accuracy, fta, ga, fga, calls_made])
+                benchmark_result.append([dataset, accuracy, fta, ga, fga, time_str, calls_made])
                 
             print(f"=== Resultado parcial para {dataset} ===", flush=True)
             print(f"| {'Metric':<6} | {'Score':<11} |", flush=True)
@@ -621,9 +621,9 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
 
     print("\n=== Resultados ===")
     if original_pa:
-        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "LLM Calls"])
+        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "Time", "LLM Calls"])
     else:
-        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "FTA", "GA", "FGA", "LLM Calls"])
+        df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "FTA", "GA", "FGA", "Time", "LLM Calls"])
     df_result.set_index("Dataset", inplace=True)
     
     if os.path.exists(result_file):
@@ -645,22 +645,24 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
     
     res_df = df_result.reset_index()
     if original_pa:
-        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'LLM Calls':<10}")
-        print("-" * 41)
+        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'Time':<12} | {'LLM Calls':<10}")
+        print("-" * 55)
         for _, row in res_df.iterrows():
             llm_calls = int(row.get('LLM Calls', 0)) if pd.notna(row.get('LLM Calls', 0)) else 0
             acc = row.get('Accuracy', 0.0) if pd.notna(row.get('Accuracy', 0.0)) else 0.0
-            print(f"{row['Dataset']:<15} | {acc:<10.6f} | {llm_calls:<10}")
+            time_val = str(row.get('Time', '')) if pd.notna(row.get('Time', '')) else ''
+            print(f"{row['Dataset']:<15} | {acc:<10.6f} | {time_val:<12} | {llm_calls:<10}")
     else:
-        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'FTA':<10} | {'GA':<10} | {'FGA':<10} | {'LLM Calls':<10}")
-        print("-" * 80)
+        print(f"{'Dataset':<15} | {'Accuracy':<10} | {'FTA':<10} | {'GA':<10} | {'FGA':<10} | {'Time':<12} | {'LLM Calls':<10}")
+        print("-" * 95)
         for _, row in res_df.iterrows():
             llm_calls = int(row.get('LLM Calls', 0)) if pd.notna(row.get('LLM Calls', 0)) else 0
             fta = row.get('FTA', 0.0) if pd.notna(row.get('FTA', 0.0)) else 0.0
             ga = row.get('GA', 0.0) if pd.notna(row.get('GA', 0.0)) else 0.0
             fga = row.get('FGA', 0.0) if pd.notna(row.get('FGA', 0.0)) else 0.0
             acc = row.get('Accuracy', 0.0) if pd.notna(row.get('Accuracy', 0.0)) else 0.0
-            print(f"{row['Dataset']:<15} | {acc:<10.6f} | {fta:<10.6f} | {ga:<10.6f} | {fga:<10.6f} | {llm_calls:<10}")
+            time_val = str(row.get('Time', '')) if pd.notna(row.get('Time', '')) else ''
+            print(f"{row['Dataset']:<15} | {acc:<10.6f} | {fta:<10.6f} | {ga:<10.6f} | {fga:<10.6f} | {time_val:<12} | {llm_calls:<10}")
 
     print(f"\nTempo total de execução do comando: {total_time_str}", flush=True)
     df_result.to_csv(result_file, float_format="%.6f")
