@@ -626,6 +626,14 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
         df_result = pd.DataFrame(benchmark_result, columns=["Dataset", "Accuracy", "FTA", "GA", "FGA", "LLM Calls"])
     df_result.set_index("Dataset", inplace=True)
     
+    if os.path.exists(result_file):
+        try:
+            existing_df = pd.read_csv(result_file, index_col="Dataset")
+            existing_unmodified = existing_df[~existing_df.index.isin(df_result.index)]
+            df_result = pd.concat([existing_unmodified, df_result])
+        except Exception as e:
+            print(f"Aviso: Não foi possível ler o arquivo CSV existente ({result_file}) para atualizar. Erro: {e}")
+            
     dataset_exibit_order = [
         "Hadoop", "HDFS", "OpenStack", "Spark", "Zookeeper", "BGL", "HPC", 
         "Thunderbird", "Linux", "Mac", "Apache", "OpenSSH", "HealthApp", "Proxifier"
@@ -640,12 +648,19 @@ def run_benchmark(input_dir, output_dir, settings, result_file="Logscan_benchmar
         print(f"{'Dataset':<15} | {'Accuracy':<10} | {'LLM Calls':<10}")
         print("-" * 41)
         for _, row in res_df.iterrows():
-            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f} | {int(row.get('LLM Calls', 0)):<10}")
+            llm_calls = int(row.get('LLM Calls', 0)) if pd.notna(row.get('LLM Calls', 0)) else 0
+            acc = row.get('Accuracy', 0.0) if pd.notna(row.get('Accuracy', 0.0)) else 0.0
+            print(f"{row['Dataset']:<15} | {acc:<10.6f} | {llm_calls:<10}")
     else:
         print(f"{'Dataset':<15} | {'Accuracy':<10} | {'FTA':<10} | {'GA':<10} | {'FGA':<10} | {'LLM Calls':<10}")
         print("-" * 80)
         for _, row in res_df.iterrows():
-            print(f"{row['Dataset']:<15} | {row['Accuracy']:<10.6f} | {row['FTA']:<10.6f} | {row['GA']:<10.6f} | {row['FGA']:<10.6f} | {int(row.get('LLM Calls', 0)):<10}")
+            llm_calls = int(row.get('LLM Calls', 0)) if pd.notna(row.get('LLM Calls', 0)) else 0
+            fta = row.get('FTA', 0.0) if pd.notna(row.get('FTA', 0.0)) else 0.0
+            ga = row.get('GA', 0.0) if pd.notna(row.get('GA', 0.0)) else 0.0
+            fga = row.get('FGA', 0.0) if pd.notna(row.get('FGA', 0.0)) else 0.0
+            acc = row.get('Accuracy', 0.0) if pd.notna(row.get('Accuracy', 0.0)) else 0.0
+            print(f"{row['Dataset']:<15} | {acc:<10.6f} | {fta:<10.6f} | {ga:<10.6f} | {fga:<10.6f} | {llm_calls:<10}")
 
     print(f"\nTempo total de execução do comando: {total_time_str}", flush=True)
     df_result.to_csv(result_file, float_format="%.6f")
